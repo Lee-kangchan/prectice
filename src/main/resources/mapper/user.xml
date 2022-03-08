@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.future.practice.domain.user.mapper.UserMapper">
+
+    <!--아이디 비밀번호 체크 -->
+    <select id="idAndPasswordCheck" parameterType="User" resultType="User">
+        SELECT * from USER
+        WHERE user_email = #{userEmail} and user_password = #{userPassword}
+    </select>
+    <!--회원가입 정보 넣기 -->
+    <insert id="signUp" parameterType="User">
+        INSERT USER(user_email, user_password, user_name, user_phone)
+        VALUES (#{userId}, #{userPassword}, #{userName}, #{userPhone})
+    </insert>
+    <!--회원수정 -->
+    <update id="updateUser" parameterType="User">
+        UPDATE USER SET user_password = #{userPassword}, user_name = #{userName}, user_phone = #{user_phone}
+        WHERE user_email = #{userEmail}
+    </update>
+    <!--회원탈퇴 -->
+    <delete id="deleteUser" parameterType="User">
+        DELETE FROM USER WHERE user_email = #{userEmail}
+    </delete>
+</mapper>
