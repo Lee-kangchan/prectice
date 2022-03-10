@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -14,7 +16,7 @@ public class Board {
     private long boardSeq;
     private String boardTitle;
     private String boardContent;
-    private String boardCreatedAt;
-    private String boardModifiedAt;
+    private LocalDateTime boardCreatedAt;
+    private LocalDateTime boardModifiedAt;
     private long boardUserSeq;
 }

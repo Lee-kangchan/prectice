@@ -10,7 +10,7 @@
         VALUES (#{commentContent}, #{commentCreatedAt}, #{commentModifiedAt}, #{commentBoardSeq})
     </insert>
     <!--댓글 조회-->
-    <select id="selectComment" parameterType="Board" resultType="Comment">
+    <select id="selectComment" parameterType="int" resultType="Comment">
         SELECT * FROM COMMENT
         WHERE comment_board_seq = #{commentBoardSeq}
     </select>
@@ -24,7 +24,7 @@
         VALUES (#{bigCommentContent}, #{bigCommentCreatedAt}, #{bigCommentModifiedAt}, #{bigCommentBoardSeq})
     </insert>
     <!--대댓글 조회-->
-    <select id="selectBigComment" parameterType="Comment" resultType="BigComment">
+    <select id="selectBigComment" parameterType="int" resultType="BigComment">
         SELECT * FROM BIG_COMMENT FROM big_comment_comment_seq = #{comment_seq};
     </select>
     <!--대댓글 삭제-->

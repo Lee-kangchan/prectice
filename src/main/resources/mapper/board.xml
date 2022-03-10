@@ -5,30 +5,39 @@
 <mapper namespace="com.future.practice.domain.board.mapper.BoardMapper">
 
     <!--게시물 추가-->
-    <insert id="insertBoard" parameterType="Board">
+    <insert id="save" parameterType="Board">
         INSERT BOARD(board_title, board_content, board_user_seq, board_created_at, board_modified_at)
         VALUES (boardTitle, boardContent, boardUserSeq, boardCreatedAt, boardModifiedAt)
     </insert>
 
     <!--게시물 변경-->
-    <update id="updateBoard" parameterType="Board">
+    <update id="updateByBoardSeq" parameterType="Board">
         UPDATE BOARD set board_title = #{boardTitle}, board_content = #{boardContent}, board_modifiedAt = #{boardModifiedAt}
         WHERE board_seq = #{boardSeq}
     </update>
 
     <!--게시물 삭제-->
-    <delete id="deleteBoard" parameterType="Board">
+    <delete id="deleteByBoardSeq" parameterType="int">
         DELETE FROM BOARD WHERE board_seq = #{boardSeq}
     </delete>
 
     <!--게시물 조회-->
-    <select id="selectBoard" resultType="Board">
+    <select id="findAll" parameterType="int" resultType="Board">
         SELECT * FROM BOARD
+        LIMIT #{page}, 10;
     </select>
 
     <!--게시물 상세 조회-->
-    <select id="selectBoardDetail" parameterType="Board" resultType="Board">
-        SELECT * FROM BOARD WHERE board_seq = #{boardSeq}
+    <select id="findOneByBoardSeq" parameterType="int" resultType="Board">
+        SELECT * FROM BOARD
+        WHERE board_seq = #{boardSeq}
+    </select>
+
+    <!--게시물 검색 조회-->
+    <select id="findAllByLikeSearch" parameterType="map" resultType="Board">
+        SELECT * FROM BOARD
+        WHERE board_title like "%"+#{search}+"%"
+        LIMIT #{page}, 10;
     </select>
 
 </mapper>

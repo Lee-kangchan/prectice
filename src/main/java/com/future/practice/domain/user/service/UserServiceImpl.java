@@ -1,40 +1,42 @@
 package com.future.practice.domain.user.service;
 
 import com.future.practice.domain.user.dto.UserDto;
-import com.future.practice.domain.user.repository.UserRepository;
+import com.future.practice.domain.user.mapper.UserMapper;
 import com.future.practice.global.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+import java.util.HashMap;
+
 @Slf4j
-@Service("UserService")
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public User loginService(UserDto.Login loginDto) {
-        User user = userRepository.idAndPasswordCheck(loginDto.toEntity());
-        log.info(loginDto.getEmail()+" -- "+ loginDto.getPassword());
-        if(user.getUserEmail()==null) new Exception(); // 아이디 패스워드 정보없는 exception 처리
+
+        User user = userMapper.findOneByIdAndPassword(loginDto.toEntity());
+        if(user.getUserEmail()==null) new NullPointerException(); // 아이디 패스워드 정보없는 exception 처리
         return user;
     }
 
     @Override
     public void signService(UserDto.Inform informDto) {
-        userRepository.signUp(informDto.toEntity());
+        userMapper.save(informDto.toEntity());
     }
 
     @Override
     public void updateService(UserDto.Inform informDto) {
-        userRepository.updateUser(informDto.toEntity());
+        userMapper.updateByUserPasswordAndUserNameAndUserPhone(informDto.toEntity());
     }
 
     @Override
     public void deleteService(String email) {
         User user = User.builder().userEmail(email).build();
-        userRepository.deleteUser(user);
+        userMapper.deleteByUserEmail(user);
     }
 }

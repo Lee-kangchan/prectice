@@ -2,13 +2,19 @@ package com.future.practice.domain.board.mapper;
 
 import com.future.practice.global.entity.Board;
 import com.future.practice.global.entity.Comment;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
+@Mapper
+@Repository
 public interface BoardMapper {
-    public void insertBoard(Board board);
-    public void updateBoard(Board board);
-    public void deleteBoard(Board board);
-    public List<Board> selectBoard();
-    public Board selectBoardDetail(Board board);
+    public void save(Board board);
+    public void updateByBoardSeq(Board board);
+    public void deleteByBoardSeq(long boardSeq);
+    public List<Board> findAll();
+    public Board findOneByBoardSeq(long boardSeq);
+    public List<Board> findAllByLikeSearch(Map<String, Object> map);
 }
