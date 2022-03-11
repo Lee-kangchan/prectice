@@ -6,15 +6,19 @@ import com.future.practice.domain.board.service.BoardService;
 import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.Board;
+import com.future.practice.global.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/board")
 @RequiredArgsConstructor
@@ -22,18 +26,21 @@ public class BoardController {
 
     private final BoardService boardService;
     @PostMapping("")
-    public ResponseEntity<ResponseDefaultDto> insertBoard(@RequestBody BoardDto boardDto){
+    public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session, @RequestBody BoardDto boardDto){
         HttpHeaders headers = new HttpHeaders();
-        boardService.insertBoardService(boardDto);
+        User user = (User)session.getAttribute("user");
+
+        boardService.insertBoardService(boardDto, user);
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_INSERT_MESSAGE).build());
     }
 
     @PutMapping("/{board_seq}")
-    public ResponseEntity<ResponseDefaultDto> updateBoard(@PathVariable("board_seq") int board_seq
+    public ResponseEntity<ResponseDefaultDto> updateBoard(HttpSession session, @PathVariable("board_seq") int board_seq
                             ,@RequestBody BoardDto boardDto){
-        boardService.updateBoardService(boardDto, board_seq);
+        User user = (User)session.getAttribute("user");
+        boardService.updateBoardService(boardDto, board_seq, user);
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
@@ -41,8 +48,9 @@ public class BoardController {
     }
 
     @DeleteMapping("/{board_seq}")
-    public ResponseEntity<ResponseDefaultDto> deleteBoard(@PathVariable("board_seq") int board_seq){
-        boardService.deleteBoardService(board_seq);
+    public ResponseEntity<ResponseDefaultDto> deleteBoard(HttpSession session, @PathVariable("board_seq") int board_seq){
+        User user = (User)session.getAttribute("user");
+        boardService.deleteBoardService(board_seq, user);
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
@@ -50,11 +58,11 @@ public class BoardController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Board>> selectBoard(@RequestParam int page){
-        boardService.selectBoardService(page);
+    public ResponseEntity<List<Board>> selectBoard(@RequestParam Map<String, Object> map){
+
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
-                .headers(headers).body(boardService.selectBoardService(page));
+                .headers(headers).body(boardService.selectBoardService(map));
     }
 
     @GetMapping("/{board_seq}")

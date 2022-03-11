@@ -12,10 +12,10 @@ import java.util.List;
 @Repository
 public interface CommentMapper {
 
-    public void insertComment(Comment comment);
-    public List<Comment> selectComment (long boardSeq);
-    public void deleteComment (Comment comment);
-    public void insertBigComment(BigComment bigComment);
-    public List<BigComment> selectBigComment (long commentSeq);
-    public void deleteBigComment (BigComment bigComment);
+    public void saveComment(Comment comment);
+    public List<Comment> findAllByCommentBoardSeq (long boardSeq);
+    public void deleteCommentByCommentSeq (long comment);
+    public void saveBigComment(BigComment bigComment);
+    public List<BigComment> findAllByCommentSeq (long commentSeq);
+    public void deleteBigCommentByBigCommentSeq (long bigComment);
 }

@@ -24,7 +24,18 @@ public class BoardDto {
                 .boardModifiedAt(time)
                 .build();
     }
-    public Board toEntity(int boardSeq){
+    public Board toEntity(String email){
+        LocalDateTime time = LocalDateTime.now();
+
+        return Board.builder()
+                .boardTitle(title)
+                .boardContent(content)
+                .boardCreatedAt(time)
+                .boardModifiedAt(time)
+                .boardUserEmail(email)
+                .build();
+    }
+    public Board toEntity(long boardSeq){
         LocalDateTime time = LocalDateTime.now();
 
         return Board.builder()

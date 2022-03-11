@@ -13,8 +13,8 @@ import java.util.Map;
 public interface BoardMapper {
     public void save(Board board);
     public void updateByBoardSeq(Board board);
-    public void deleteByBoardSeq(long boardSeq);
-    public List<Board> findAll();
+    public void deleteByBoardSeq(Board board);
+    public List<Board> findAll(Map<String, Object> map);
     public Board findOneByBoardSeq(long boardSeq);
     public List<Board> findAllByLikeSearch(Map<String, Object> map);
 }

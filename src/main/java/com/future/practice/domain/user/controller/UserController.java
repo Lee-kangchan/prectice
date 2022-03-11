@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @Slf4j
 @Controller
 @RestController
@@ -25,11 +27,10 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDefaultDto> login(@RequestBody UserDto.Login loginDto){
+    public ResponseEntity<ResponseDefaultDto> login(HttpSession session, UserDto.Login loginDto){
         User user = userService.loginService(loginDto);
-
+        session.setAttribute("user",user); //session
         //token 생성, Session 생성
-
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PostMapping("/sign")
-    public ResponseEntity<ResponseDefaultDto>  sign(@RequestBody UserDto.Inform informDto){
+    public ResponseEntity<ResponseDefaultDto> sign(UserDto.Inform informDto){
         log.info("sign");
         userService.signService(informDto);
         HttpHeaders headers = new HttpHeaders();

@@ -1,0 +1,145 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <style>
+            @media(max-width:767px) {
+                .navbar .navbar-form {
+                    width: 185px;
+                    padding-left:0;
+                    padding-right:0;
+                }
+            }
+            @media(min-width:768px) {
+                .navbar .navbar-form {
+                    width: 250px;
+                }
+            }
+            .navbar .navbar-form {
+                padding-top: 0;
+                padding-bottom: 0;
+                margin-right: 0;
+                margin-left: 0;
+                border: 0;
+                -webkit-box-shadow: none;
+                box-shadow: none;
+            }
+            .mainTable{
+                margin-top: 2%;
+            }
+            th, td{
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/main">future</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                        <button id="searchSubmit" class="btn btn-outline-success my-2 my-sm-0" onsubmit="return false">Search</button>
+                    </form>
+                    <script>
+                        $("#searchSubmit").click(function (){
+                            var formData = {
+                                'search' : $("input[name=email]").val()
+                            }
+                            console.log(formData.email)
+
+                            $.ajax({
+                                type : "POST",
+                                url : "/v1/board/search",
+                                data : formData,
+                                dataType: 'json',
+                                success : function(data){
+                                    alert(data.message)
+                                    location.href="/main/search?search="+formData.search
+                                },
+                                error : function (data){
+                                    alert(data.message)
+                                }})
+
+                        })
+                    </script>
+                    <!-- <li class="nav-item active">
+                      <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Pricing</a>
+                    </li> -->
+                </ul>
+
+                <ul class="navbar-nav">
+                    <!--나중에 세션 관리 해야됨-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">로그인</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sign">회원가입</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/myPage">회원변경</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">로그아웃</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+          <div style="width: 80%; margin: auto; margin-top: 2%;">
+            <h3>hello world</h3>
+            <span>작성자 : ㅁㅁㅁ</span> <span>날짜 : 2022-02-02</span>
+            <hr>
+            <p>hello nice</p>
+            
+            <button type="button" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> 좋아요</button>
+
+            <button type="button" class="btn btn-default">공유하기 <span class="glyphicon glyphicon-share-alt"></span></button>
+            <hr>
+            <h3>댓글</h3>
+            <hr>
+            <div class="card">
+                <div class="card-header">
+                   <spam>회원 : abc</spam><small style="float: right;"> 날짜 : 2022-03-01</small>
+                </div>
+                <div class="card-body">
+                  <div style="float: left; width: 80%;" ><span  class="card-text">With supporting text below as a natural leaporting text below as a natural leaporting text below as a natural lead-in to additional content.</span></div>
+                  <button style="float: right;" type="button" class="btn btn-default"> 삭제 <span class="glyphicon glyphicon-share-alt"></span></button>
+                  <button style="float: right;" type="button" class="btn btn-default"> 수정 <span class="glyphicon glyphicon-share-alt"></span></button>
+                  <button style="float: right;" type="button" class="btn btn-default"> 답장 <span class="glyphicon glyphicon-share-alt"></span></button>
+               
+                </div>
+            </div>
+              <div class="card">
+                <div class="card-header">
+                    <spam>회원 : abc</spam><small style="float: right;"> 날짜 : 2022-03-01</small>
+                </div>
+                <div class="card-body">
+                    <span  class="card-text">With supporting text below as a natural lead-in to additional content.</span>
+                    <button style="float: right;" type="button" class="btn btn-default"> 삭제 <span class="glyphicon glyphicon-share-alt"></span></button>
+                    <button style="float: right;" type="button" class="btn btn-default"> 수정 <span class="glyphicon glyphicon-share-alt"></span></button>
+                    <button style="float: right;" type="button" class="btn btn-default"> 답장 <span class="glyphicon glyphicon-share-alt"></span></button>
+                  </div>
+              </div>
+            <hr>
+
+            
+              <input style="width:90%; float: left;" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"> 
+              <button style="float: right;"type="submit" class="btn btn-primary">Submit</button>
+          </div>
+    </body>
+</html>

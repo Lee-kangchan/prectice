@@ -18,5 +18,5 @@ public class Board {
     private String boardContent;
     private LocalDateTime boardCreatedAt;
     private LocalDateTime boardModifiedAt;
-    private long boardUserSeq;
+    private String boardUserEmail;
 }

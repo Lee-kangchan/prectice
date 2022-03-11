@@ -1,32 +1,70 @@
 package com.future.practice.domain.board.controller;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.future.practice.domain.board.dto.CommentDto;
+import com.future.practice.domain.board.dto.ResponseBoardDetailDto;
+import com.future.practice.domain.board.service.CommentService;
+import com.future.practice.global.constant.ResponseMessage;
+import com.future.practice.global.dto.ResponseDefaultDto;
+import com.future.practice.global.entity.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
 
 @RequestMapping("/v1")
+@RequiredArgsConstructor
+@RestController("")
 public class CommentController {
 
+    private final CommentService commentService;
 
     @PostMapping("/board/{board_seq}/comment")
-    public void insertComment(@PathVariable("board_seq") int board_seq){
-
+    public ResponseEntity<ResponseDefaultDto> insertComment(@PathVariable("board_seq") int board_seq,
+                                                            @RequestBody CommentDto commentDto,
+                                                                        HttpSession session){
+        User user = (User) session.getAttribute("user");
+        commentService.insertComment(commentDto, board_seq, user);
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_COMMENT_INSERT_MESSAGE).build());
     }
 
-    @PostMapping("/v1/comment/{comment_seq}")
-    public void insertBigComment(@PathVariable("comment_seq") int comment_seq){
-
+    @PostMapping("/comment/{comment_seq}")
+    public ResponseEntity<ResponseDefaultDto>  insertBigComment(@PathVariable("comment_seq") int comment_seq,
+                                                                @RequestBody CommentDto commentDto,
+                                                                HttpSession session){
+        User user = (User) session.getAttribute("user");
+        commentService.insertBigComment(commentDto, comment_seq, user);
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BIG_COMMENT_INSERT_MESSAGE).build());
     }
 
-    @DeleteMapping("/v1/comment/{comment_seq}")
-    public void deleteComment(@PathVariable("comment_seq") int comment_seq){
-
+    @DeleteMapping("/comment/{comment_seq}")
+    public ResponseEntity<ResponseDefaultDto>  deleteComment(@PathVariable("comment_seq") int comment_seq
+                                                            ,HttpSession session){
+        User user = (User)session.getAttribute("user");
+        commentService.deleteComment(comment_seq, user);
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_COMMENT_DELETE_MESSAGE).build());
     }
 
-    @DeleteMapping("/v1/bigComment/{bigComment_seq}")
-    public void deleteBigComment(@PathVariable("bigComment_seq") int big_comment_seq){
+    @DeleteMapping("/bigComment/{big_comment_seq}")
+    public ResponseEntity<ResponseDefaultDto>  deleteBigComment(@PathVariable("big_comment_seq") int big_comment_seq
+                                                                ,HttpSession session){
 
+        User user = (User)session.getAttribute("user");
+        commentService.deleteBigComment(big_comment_seq, user);
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BIG_COMMENT_DELETE_MESSAGE).build());
     }
 
 }

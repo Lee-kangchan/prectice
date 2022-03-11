@@ -17,4 +17,5 @@ public class Comment {
     private LocalDateTime commentCreatedAt;
     private LocalDateTime commentModifiedAt;
     private long commentBoardSeq;
+    private String commentUserEmail;
 }

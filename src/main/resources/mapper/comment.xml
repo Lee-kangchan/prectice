@@ -5,30 +5,45 @@
 <mapper namespace="com.future.practice.domain.board.mapper.CommentMapper">
 
     <!--댓글 추가-->
-    <insert id="insertComment" parameterType="Comment">
-        INSERT INTO COMMENT(comment_content, comment_created_at, comment_modified_at, comment_board_seq)
-        VALUES (#{commentContent}, #{commentCreatedAt}, #{commentModifiedAt}, #{commentBoardSeq})
+    <insert id="saveComment" parameterType="Comment">
+        INSERT INTO COMMENT(comment_content, comment_created_at, comment_modified_at, comment_board_seq, comment_user_email)
+        VALUES (#{commentContent}, #{commentCreatedAt}, #{commentModifiedAt}, #{commentBoardSeq}, #{commentUserEmail})
     </insert>
     <!--댓글 조회-->
-    <select id="selectComment" parameterType="int" resultType="Comment">
-        SELECT * FROM COMMENT
+    <select id="findAllByCommentBoardSeq" parameterType="long" resultType="Comment">
+        SELECT
+            comment_seq AS commentSeq,
+            comment_content AS commentContent,
+            comment_created_at AS commentCreatedAt,
+            comment_modified_at AS commentModifiedAt,
+            comment_board_seq AS commentBoardSeq,
+            comment_user_email AS commentUserEmail
+        FROM COMMENT
         WHERE comment_board_seq = #{commentBoardSeq}
     </select>
     <!--댓글 삭제-->
-    <delete id="deleteComment" parameterType="Comment">
+    <delete id="deleteCommentByCommentSeq" parameterType="Comment">
         DELETE FROM COMMENT WHERE comment_seq = #{commentSeq}
     </delete>
     <!--대댓글 추가-->
-    <insert id="insertBigComment" parameterType="BigComment">
-        INSERT INTO BIG_COMMENT(big_comment_content, big_comment_created_at, big_comment_modified_at, big_comment_board_seq)
-        VALUES (#{bigCommentContent}, #{bigCommentCreatedAt}, #{bigCommentModifiedAt}, #{bigCommentBoardSeq})
+    <insert id="saveBigComment" parameterType="BigComment">
+        INSERT INTO BIG_COMMENT(big_comment_content, big_comment_created_at, big_comment_modified_at, big_comment_comment_seq, big_comment_user_email)
+        VALUES (#{bigCommentContent}, #{bigCommentCreatedAt}, #{bigCommentModifiedAt}, #{bigCommentCommentSeq}, #{bigCommentUserEmail})
     </insert>
     <!--대댓글 조회-->
-    <select id="selectBigComment" parameterType="int" resultType="BigComment">
-        SELECT * FROM BIG_COMMENT FROM big_comment_comment_seq = #{comment_seq};
+    <select id="findAllByCommentSeq" parameterType="long" resultType="BigComment">
+        SELECT
+            big_comment_seq AS bigCommentSeq,
+            big_comment_content AS bigCommentContent,
+            big_comment_created_at AS bigCommentCreatedAt,
+            big_comment_modified_at AS bigCommentModifiedAt,
+            big_comment_comment_seq AS bigCommentCommentSeq,
+            big_comment_user_email AS bigCommentUserEmail
+        FROM BIG_COMMENT
+        WHERE big_comment_comment_seq = #{comment_seq};
     </select>
     <!--대댓글 삭제-->
-    <delete id="deleteBigComment" parameterType="BigComment">
+    <delete id="deleteBigCommentByBigCommentSeq" parameterType="BigComment">
         DELETE FROM BIG_COMMENT WHERE big_comment_seq = #{bigCommentSeq}
     </delete>
 </mapper>
