@@ -45,14 +45,14 @@
             <div class="collapse navbar-collapse" id="navbarText">
               <ul class="navbar-nav mr-auto">
                   
-                <form class="form-inline my-2 my-lg-0">
+                <form class="form-inline my-2 my-lg-0" onsubmit="return false">
                     <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
                     <button id="searchSubmit" class="btn btn-outline-success my-2 my-sm-0" onsubmit="return false">Search</button>
                   </form>
                 <script>
                     $("#searchSubmit").click(function (){
                         var formData = {
-                            'search' : $("input[name=email]").val()
+                            'search' : $("input[name=search]").val()
                         }
                         console.log(formData.email)
 
@@ -84,57 +84,52 @@
 
               <ul class="navbar-nav">
                   <!--나중에 세션 관리 해야됨-->
-                <li class="nav-item">
-                  <a class="nav-link" href="/login">로그인</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/sign">회원가입</a>
-                  </li>
-
-              <li class="nav-item">
-                  <a class="nav-link" href="/myPage">회원변경</a>
-              <li class="nav-item">
-                  <a class="nav-link" href="/logout">로그아웃</a>
-              </li>
+                  <li th:if="${session.user == null}" class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
+                  <li th:if="${session.user == null}" class="nav-item"><a class="nav-link" href="/sign">회원가입</a></li>
+                  <li th:if="${session.user != null}" class="nav-item"> <a class="nav-link" href="/myPage">회원변경</a> </li>
+                  <li th:if="${session.user != null}" class="nav-item"> <a class="nav-link" href="/logout">로그아웃</a> </li>
             </ul>
             </div>
           </nav>
 
-            <form style="width:60%; margin:auto; margin-top:3%;">
+            <form style="width:60%; margin:auto; margin-top:3%;" onsubmit="return false">
                 <h3 style="text-align: center;"> Board Add</h3>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Title</label>
-                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="제목">
+                    <input name="title" type="text" class="form-control" id="exampleFormControlInput1" placeholder="제목">
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlTextarea1">Content</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="내용"></textarea>
+                    <textarea name="content" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="내용"></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button id="boardSubmit" class="btn btn-primary">Submit</button>
             </form>
 
     </body>
     <script>
+        $("#boardSubmit").click(function (){
+            var content = $("textarea[name=content]").val().replace(/\n/g, "<br>");
 
+            console.log(content)
+            var formData = {
+                'title' : $("input[name=title]").val(),
+                'content' : content
+            }
+            $.ajax({
+                type : "POST",
+                url : "/v1/board",
+                data : formData,
+                dataType: 'json',
+                success : function(data){
+                    alert("성공하셨습니다.")
+                    location.href("/main")
+                },
+                error : function (data){
+                    alert(data.message)
+                }})
+        });
 
-        var formData = {
-            'title' : $("input[name=email]").val(),
-            'content' : $("input[name=content]").val().replace("/\n\g","<br>")
-        }
-        $.ajax({
-            type : "POST",
-            url : "/v1/board",
-            data : formData,
-            dataType: 'json',
-            success : function(data){
-                alert(data.message)
-                location.href="/main/search?search="+formData.search
-            },
-            error : function (data){
-                alert(data.message)
-            }})
 
     </script>
 </html>

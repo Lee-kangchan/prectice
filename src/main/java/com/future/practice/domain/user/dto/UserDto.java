@@ -37,6 +37,14 @@ public class UserDto {
                     .userPhone(phone)
                     .build();
         }
+        public User toEntity(String email){
+            return User.builder()
+                    .userEmail(email)
+                    .userPassword(password)
+                    .userName(name)
+                    .userPhone(phone)
+                    .build();
+        }
     }
 
 }

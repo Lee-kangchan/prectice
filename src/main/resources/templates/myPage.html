@@ -45,7 +45,7 @@
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mr-auto">
 
-                    <form class="form-inline my-2 my-lg-0">
+                    <form class="form-inline my-2 my-lg-0" onsubmit="return false">
                         <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
                         <button id="searchSubmit" class="btn btn-outline-success my-2 my-sm-0" onsubmit="return false">Search</button>
                     </form>
@@ -71,35 +71,89 @@
 
                         })
                     </script>
-                    <!-- <li class="nav-item active">
-                      <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#">Features</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#">Pricing</a>
-                    </li> -->
                 </ul>
 
                 <ul class="navbar-nav">
                     <!--나중에 세션 관리 해야됨-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">로그인</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/sign">회원가입</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/myPage">회원변경</a>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">로그아웃</a>
-                    </li>
+                    <li th:if="${session.user == null}" class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
+                    <li th:if="${session.user == null}" class="nav-item"><a class="nav-link" href="/sign">회원가입</a></li>
+                    <li th:if="${session.user != null}" class="nav-item"> <a class="nav-link" href="/myPage">회원변경</a> </li>
+                    <li th:if="${session.user != null}" class="nav-item"> <a class="nav-link" href="/logout">로그아웃</a> </li>
                 </ul>
             </div>
         </nav>
-          
+        <div id="userInform">
+
+        </div>
     </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $.ajax({
+            type : "GET",
+            url : "/v1/user",
+            dataType: 'json',
+            success : function(data){
+                html = "\n" +
+                    "          <form style=\"width: 60%; margin : auto ; margin-top: 5%;\"  onsubmit=\"return false\">\n" +
+                    "            <h3 style=\"text-align: center;\"> User</h3>\n" +
+                    "            <p>Email : "+data.userEmail+ "</p>"+
+                    "            <div class=\"form-group\">\n" +
+                    "              <label for=\"exampleInputPassword1\">Password</label>\n" +
+                    "              <input type=\"password\" name=\"password\" class=\"form-control\" id=\"exampleInputPassword1\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group\">\n" +
+                    "              <label for=\"passwordCheck\">Password Check</label>\n" +
+                    "              <input type=\"password\" class=\"form-control\" id=\"passwordCheck\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group\">\n" +
+                    "              <label for=\"username\">Name</label>\n" +
+                    "              <input type=\"text\" name=\"userName\" class=\"form-control\" id=\"username\" value=\""+data.userName + "\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group\">\n" +
+                    "              <label for=\"phone\">Phone</label>\n" +
+                    "              <input type=\"text\" name=\"phone\" class=\"form-control\" id=\"phone\" value=\""+data.userPhone + "\">\n" +
+                    "            </div>\n" +
+                    "            <button id=\"updateSubmit\" class=\"btn btn-primary\">Submit</button>\n" +
+                    "            <button id=\"deleteButton\" class=\"btn btn-danger\" style='float: right'>Delete</button>\n" +
+                    "          </form>"
+                $("#userInform").html(html);
+                $("#updateSubmit").click(function (){
+                    console.log($("input[name=password]").val());
+                    var formData = {
+                        'password' : $("input[name=password]").val(),
+                        'name' : $("input[name=userName]").val(),
+                        'phone' : $("input[name=phone]").val()
+                    }
+                    $.ajax({
+                        type : "PUT",
+                        url : "/v1/user",
+                        data : formData,
+                        dataType: 'json',
+                        success : function(data){
+                            alert(data.message)
+                            location.href="/main";
+                        },
+                        error : function (data){
+                            alert(data.message)
+                        }})
+                })
+                $("#deleteButton").click(function (){
+                    $.ajax({
+                        type : "DELETE",
+                        url : "/v1/user",
+                        dataType: 'json',
+                        success : function(data){
+                            alert(data.message)
+                            location.href="/logout";
+                        },
+                        error : function (data){
+                            alert(data.message)
+                        }})
+                    })
+            },
+            error : function (data){
+                alert(data.message)
+            }})
+    </script>
 </html>

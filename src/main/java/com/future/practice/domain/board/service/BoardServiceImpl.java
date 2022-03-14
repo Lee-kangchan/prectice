@@ -3,6 +3,7 @@ package com.future.practice.domain.board.service;
 import com.future.practice.domain.board.dto.BoardDto;
 import com.future.practice.domain.board.dto.CommentAll;
 import com.future.practice.domain.board.dto.ResponseBoardDetailDto;
+import com.future.practice.domain.board.dto.ResponseBoardDto;
 import com.future.practice.domain.board.mapper.BoardMapper;
 import com.future.practice.domain.board.mapper.CommentMapper;
 import com.future.practice.global.constant.Common;
@@ -24,8 +25,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardMapper boardMapper;
     private final CommentMapper commentMapper;
     @Override
-    public void insertBoardService(BoardDto boardDto, User user) {
-        log.info("userEmail: " + user.getUserEmail());
+    public void insertBoardService(BoardDto boardDto, User user ) {
         boardMapper.save(boardDto.toEntity(user.getUserEmail()));
     }
     @Override
@@ -40,15 +40,20 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    //paging은 10개씩 --> 변경할수도?
+    //pageing은 10개씩 --> 변경할수도?
     @Override
-    public List<Board> selectBoardService(Map<String, Object> map) {
+    public ResponseBoardDto selectBoardService(Map<String, Object> map) {
         map.put("board_num", Common.BOARD_NUM);
-        log.info(map.get("page").toString());
+        if(map.get("page") ==null) map.put("page",1);
+
         map.put("page", (Integer.parseInt(map.get("page").toString())-1 )* Common.BOARD_NUM);
+        log.info("board length : " + boardMapper.findAllLength(""));
 
-        return boardMapper.findAll(map);
-
+        return ResponseBoardDto.builder()
+                .board(boardMapper.findAll(map))
+                .page((int)map.get("page")) // Integer.parseInt(map.get("page").toString)
+                .length(boardMapper.findAllLength(""))
+                .build();
     }
 
     @Override
@@ -65,19 +70,22 @@ public class BoardServiceImpl implements BoardService {
                     .build());
         }
 
-        ResponseBoardDetailDto responseBoardDetailDto
-        = ResponseBoardDetailDto.builder()
+        return ResponseBoardDetailDto.builder()
                 .code(200)
                 .board(boardMapper.findOneByBoardSeq(boardSeq))
                 .commentAll(commentAll)
                 .build();
-        return responseBoardDetailDto;
     }
 
     @Override
-    public List<Board> selectSearchBoardService(Map<String, Object> map) {
+    public ResponseBoardDto selectSearchBoardService(Map<String, Object> map) {
         map.put("board_num", Common.BOARD_NUM);
         map.put("page", (Integer.parseInt(map.get("page").toString())-1 )* Common.BOARD_NUM);
-        return boardMapper.findAllByLikeSearch(map);
+        return ResponseBoardDto
+                .builder()
+                .board(boardMapper.findAllByLikeSearch(map))
+                .page((int)map.get("page")) // Integer.parseInt(map.get("page").toString)
+                .length(boardMapper.findAllLength(map.get("search").toString()))
+                .build();
     }
 }

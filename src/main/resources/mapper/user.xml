@@ -5,7 +5,7 @@
 <mapper namespace="com.future.practice.domain.user.mapper.UserMapper">
 
     <!--아이디 비밀번호 체크 -->
-    <select id="findOneByIdAndPassword" parameterType="com.future.practice.global.entity.User" resultType="com.future.practice.global.entity.User" >
+    <select id="findOneByEmailAndPassword" parameterType="com.future.practice.global.entity.User" resultType="com.future.practice.global.entity.User" >
         SELECT
             USER.user_email AS userEmail,
             USER.user_password AS userPassword,
@@ -15,6 +15,19 @@
         WHERE
             USER.user_email = #{userEmail}
           and USER.user_password = #{userPassword}
+
+    </select>
+
+    <!--이메일로 회원 찾기-->
+    <select id="findOneByEmail" parameterType="User" resultType="User">
+        SELECT
+            USER.user_email AS userEmail,
+            USER.user_password AS userPassword,
+            USER.user_name AS userName,
+            USER.user_phone AS userPhone
+        FROM USER
+        WHERE
+            USER.user_email = #{userEmail}
     </select>
     <!--회원가입 정보 넣기 -->
     <insert id="save" parameterType="user">

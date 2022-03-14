@@ -11,9 +11,11 @@ import java.util.List;
 @Mapper
 @Repository
 public interface UserMapper {
-    public User findOneByIdAndPassword(User user);
+    public User findOneByEmailAndPassword(User user);
+    public User findOneByEmail(User user);
     public List<HashMap<String, Object>> testcase();
     public void save(User user);
     public void updateByUserPasswordAndUserNameAndUserPhone(User user);
     public void deleteByUserEmail(User user);
+
 }

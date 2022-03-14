@@ -19,9 +19,14 @@ public class UserServiceImpl implements UserService{
     @Override
     public User loginService(UserDto.Login loginDto) {
 
-        User user = userMapper.findOneByIdAndPassword(loginDto.toEntity());
+        User user = userMapper.findOneByEmailAndPassword(loginDto.toEntity());
         if(user.getUserEmail()==null) new NullPointerException(); // 아이디 패스워드 정보없는 exception 처리
         return user;
+    }
+
+    @Override
+    public User userInformService(User user){
+        return userMapper.findOneByEmail(user);
     }
 
     @Override
@@ -30,8 +35,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updateService(UserDto.Inform informDto) {
-        userMapper.updateByUserPasswordAndUserNameAndUserPhone(informDto.toEntity());
+    public void updateService(UserDto.Inform informDto, String email) {
+        userMapper.updateByUserPasswordAndUserNameAndUserPhone(informDto.toEntity(email));
     }
 
     @Override

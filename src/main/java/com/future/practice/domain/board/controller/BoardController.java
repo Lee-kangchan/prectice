@@ -2,6 +2,7 @@ package com.future.practice.domain.board.controller;
 
 import com.future.practice.domain.board.dto.BoardDto;
 import com.future.practice.domain.board.dto.ResponseBoardDetailDto;
+import com.future.practice.domain.board.dto.ResponseBoardDto;
 import com.future.practice.domain.board.service.BoardService;
 import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.dto.ResponseDefaultDto;
@@ -26,10 +27,11 @@ public class BoardController {
 
     private final BoardService boardService;
     @PostMapping("")
-    public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session, @RequestBody BoardDto boardDto){
+    public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session,BoardDto boardDto){
         HttpHeaders headers = new HttpHeaders();
         User user = (User)session.getAttribute("user");
 
+        log.info(boardDto.getTitle() + " --" + boardDto.getContent());
         boardService.insertBoardService(boardDto, user);
         return ResponseEntity.ok()
                 .headers(headers)
@@ -58,7 +60,7 @@ public class BoardController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Board>> selectBoard(@RequestParam Map<String, Object> map){
+    public ResponseEntity<ResponseBoardDto> selectBoard(@RequestParam Map<String, Object> map){
 
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
@@ -73,7 +75,7 @@ public class BoardController {
                 .body(boardService.selectBoardDetailService(board_seq));
     }
     @GetMapping("/search")
-    public ResponseEntity<List<Board>> searchBoard(@RequestParam Map<String, Object> paramMap){  // search, page 값
+    public ResponseEntity<ResponseBoardDto> searchBoard(@RequestParam Map<String, Object> paramMap){  // search, page 값
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)

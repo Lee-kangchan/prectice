@@ -31,6 +31,7 @@
             board_modified_at AS boardModifiedAt,
             board_user_email AS boardUserEmail
         FROM BOARD
+        ORDER BY board_modified_at DESC
         LIMIT #{page}, #{board_num};
     </select>
 
@@ -58,7 +59,13 @@
             board_user_email AS boardUserEmail
         FROM BOARD
         WHERE board_title LIKE CONCAT("%",#{search},"%")
+        ORDER BY board_modified_at DESC
         LIMIT #{page}, #{board_num};
     </select>
 
+    <!--게시물 총 갯수-->
+    <select id="findAllLength" parameterType="String" resultType="int">
+        SELECT CEILING(COUNT(board_seq)/10) AS length FROM mydb.BOARD
+        where board_title like concat("%", #{search},"%")
+    </select>
 </mapper>

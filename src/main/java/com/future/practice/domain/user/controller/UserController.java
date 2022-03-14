@@ -30,6 +30,7 @@ public class UserController {
     public ResponseEntity<ResponseDefaultDto> login(HttpSession session, UserDto.Login loginDto){
         User user = userService.loginService(loginDto);
         session.setAttribute("user",user); //session
+        log.info("loginDto email : "+ loginDto.getEmail() +" password :" + loginDto.getPassword());
         //token 생성, Session 생성
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
@@ -54,20 +55,31 @@ public class UserController {
                 .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_SIGN_MESSAGE).build());
     }
 
-    @PutMapping("/{userEmail}")
-    public ResponseEntity<ResponseDefaultDto>  updateUser(@RequestBody UserDto.Inform informDto, @PathVariable("userEmail") String userEmail){
+    @PutMapping("")
+    public ResponseEntity<ResponseDefaultDto>  updateUser( UserDto.Inform informDto, HttpSession session){
         log.info("update User");
-        userService.updateService(informDto);
+        log.info("inform : password : " + informDto.getPassword() + "name" + informDto.getName() + "phone" + informDto.getPhone());
+        userService.updateService(informDto, ((User)session.getAttribute("user")).getUserEmail());
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_USER_UPDATE_MESSAGE).build());
     }
+    @GetMapping("")
+    public ResponseEntity<User> selectUser(HttpSession session){
+        log.info("select User");
+        User user = userService.userInformService((User)session.getAttribute("user"));
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(user);
+    }
 
-    @DeleteMapping("/{userEmail}")
-    public ResponseEntity<ResponseDefaultDto>  deleteUser(@PathVariable("userEmail") String userEmail){
+    @DeleteMapping("")
+    public ResponseEntity<ResponseDefaultDto>  deleteUser(HttpSession session){
         log.info("delete User");
-        userService.deleteService(userEmail);
+        userService.deleteService(((User)session.getAttribute("user")).getUserEmail());
+
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)

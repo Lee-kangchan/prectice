@@ -52,7 +52,7 @@
             <script>
                 $("#searchSubmit").click(function (){
                     var formData = {
-                        'search' : $("input[name=email]").val()
+                        'search' : $("input[name=search]").val()
                     }
                     console.log(formData.email)
 
@@ -71,6 +71,15 @@
 
                 })
             </script>
+            <!-- <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Pricing</a>
+            </li> -->
         </ul>
 
         <ul class="navbar-nav">
@@ -82,42 +91,45 @@
         </ul>
     </div>
 </nav>
-          <div>
-            <form id="login" style="width: 30%;  margin: auto; margin-top: 5%; border: 0ch; background-color: white;" onsubmit="return false">
-                <h3 style="text-align: center;">Login</h3>
-                <div class="form-group">
-                <label for="exampleInputEmail1">Email</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp">
-                </div>
-                <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" name="password" id="exampleInputPassword1">
-                </div>
-                <button id="loginSubmit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-    </body>
-    <script>
-        $("#loginSubmit").click(function (){
-            var formData = {
-                'email' : $("input[name=email]").val(),
-                'password' : $("input[name=password]").val()
-            }
-            console.log(formData.email)
 
-            $.ajax({
-                type : "POST",
-                url : "/v1/user/login",
-                data : formData,
-                dataType: 'json',
-                success : function(data){
-                    alert(data.message)
-                    location.href="/main"
-                },
-                error : function (data){
-                    alert(data.message)
-                }})
+<form style="width:60%; margin:auto; margin-top:3%;" onsubmit="return false">
+    <h3 style="text-align: center;"> Board Add</h3>
+    <div class="form-group">
+        <label for="exampleFormControlInput1">Title</label>
+        <input name="title" type="text" class="form-control" id="exampleFormControlInput1" placeholder="제목">
+    </div>
+    <div class="form-group">
+        <label for="exampleFormControlTextarea1">Content</label>
+        <textarea name="content" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="내용"></textarea>
+    </div>
 
-        })
-    </script>
+    <button id="boardSubmit" class="btn btn-primary">Submit</button>
+</form>
+
+</body>
+<script>
+    $("#boardSubmit").click(function (){
+        var content = $("textarea[name=content]").val().replace(/\n/g, "<br>");
+
+        console.log(content)
+        var formData = {
+            'title' : $("input[name=title]").val(),
+            'content' : content
+        }
+        $.ajax({
+            type : "POST",
+            url : "/v1/board",
+            data : formData,
+            dataType: 'json',
+            success : function(data){
+                alert("성공하셨습니다.")
+                location.href("/main")
+            },
+            error : function (data){
+                alert(data.message)
+            }})
+    });
+
+
+</script>
 </html>
