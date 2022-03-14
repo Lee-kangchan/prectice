@@ -5,7 +5,6 @@ import com.future.practice.domain.user.service.UserService;
 import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.User;
-import com.sun.xml.internal.ws.api.message.Header;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("")
-    public ResponseEntity<ResponseDefaultDto>  updateUser( UserDto.Inform informDto, HttpSession session){
+    public ResponseEntity<ResponseDefaultDto> updateUser( UserDto.Inform informDto, HttpSession session){
         log.info("update User");
         log.info("inform : password : " + informDto.getPassword() + "name" + informDto.getName() + "phone" + informDto.getPhone());
         userService.updateService(informDto, ((User)session.getAttribute("user")).getUserEmail());
@@ -76,7 +75,7 @@ public class UserController {
     }
 
     @DeleteMapping("")
-    public ResponseEntity<ResponseDefaultDto>  deleteUser(HttpSession session){
+    public ResponseEntity<ResponseDefaultDto> deleteUser(HttpSession session){
         log.info("delete User");
         userService.deleteService(((User)session.getAttribute("user")).getUserEmail());
 
