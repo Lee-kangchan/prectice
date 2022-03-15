@@ -4,7 +4,7 @@ import com.future.practice.global.exception.ErrorCode;
 
 public class BoardNotFoundException extends CustomException{
 
-    public BoardNotFoundException(ErrorCode errorCode) {
+    public BoardNotFoundException() {
         super(ErrorCode.BOARD_NOT_FOUND);
     }
 }

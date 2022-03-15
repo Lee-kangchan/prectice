@@ -58,7 +58,7 @@
 
                     $.ajax({
                         type : "POST",
-                        url : "/v1/board/search",
+                        url : "/v1/board/search?search="+formData.search,
                         data : formData,
                         dataType: 'json',
                         success : function(data){
@@ -74,7 +74,6 @@
         </ul>
 
         <ul class="navbar-nav">
-            <!--나중에 세션 관리 해야됨-->
             <li th:if="${session.user == null}" class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
             <li th:if="${session.user == null}" class="nav-item"><a class="nav-link" href="/sign">회원가입</a></li>
             <li th:if="${session.user != null}" class="nav-item"> <a class="nav-link" href="/myPage">회원변경</a> </li>
@@ -82,43 +81,88 @@
         </ul>
     </div>
 </nav>
-          <div>
-            <form id="login" style="width: 30%;  margin: auto; margin-top: 5%; border: 0ch; background-color: white;" onsubmit="return false">
-                <h3 style="text-align: center;">Login</h3>
-                <div class="form-group">
-                <label for="exampleInputEmail1">Email</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp">
-                </div>
-                <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" name="password" id="exampleInputPassword1">
-                </div>
-                <button id="loginSubmit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-    </body>
-    <script>
-        $("#loginSubmit").click(function (){
-            var formData = {
-                'email' : $("input[name=email]").val(),
-                'password' : $("input[name=password]").val()
+<div id="mainTable" class="mainTable">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col" colspan="1">번호</th>
+            <th scope="col" colspan="5">제목</th>
+            <th scope="col" colspan="2">날짜</th>
+            <th scope="col" colspan="1">회원</th>
+        </tr>
+        </thead>
+        <tbody id="tableContent">
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation example" id="page" style="display: flex;"></nav>
+
+    <a th:if="${session.user != null}" href="/boardAdd"><button style="float: right;"type="submit" class="btn btn-primary">게시판 추가</button></a>
+</div>
+</body>
+<script>
+    function searchParam(key) {
+        return new URLSearchParams(location.search).get(key);
+    };
+    var param = searchParam("page");
+    var search = searchParam("search");
+    let URL = "/main?";
+    let search = "";
+    let page = "page=";
+    if(search != null) search ="search="+search+"&";
+    if(param == null) param =1;
+    $.ajax({
+        type : "GET",
+        url : "/v1/board?page="+param+"&search="+search,
+        dataType: 'json',
+        success : async function(data){
+            console.log(data.toString())
+            var tableHtml = "";
+            await data.board.forEach(function(item, index){
+                tableHtml +="    <tr>\n" +
+                    "        <th scope=\"col\" colspan=\"1\">"+ item.boardSeq +"</td>\n" +
+                    "        <td scope=\"col\" colspan=\"5\"><a style=\"color:black;text-decoration-line: none \"href='/mainDetail?board_seq=" +item.boardSeq+ "'>"+ item.boardTitle +"</a></td>\n" +
+                    "        <td scope=\"col\" colspan=\"2\">"+ item.boardModifiedAt.split("T")[0] +"</td>\n" +
+                    "        <td scope=\"col\" colspan=\"1\">"+item.boardUserEmail+"</td>\n" +
+                    "    </tr>\n";
+            });
+            var startPage = Math.floor( data.page/50 ) *5;
+            pagingHtml= "<ul class=\"pagination\" style=\"margin: auto;\">\n" +
+                "            <li class=\"page-item\"><a id=\"previous\" class=\"page-link\" href=\"#\">Previous</a></li>\n"
+            for(var i=startPage+1 ; i <= startPage+5; i++){
+                if(i > data.length) break;
+                pagingHtml += "<li class=\"page-item\"><a class=\"page-link\" href=\""+URL+search+page+i +"\">"+i +"</a></li>\n"
             }
-            console.log(formData.email)
+            pagingHtml += " <li class=\"page-item\"><a id=\"next\" class=\"page-link\" href=\"#\">Next</a></li></ul>"
 
-            $.ajax({
-                type : "POST",
-                url : "/v1/user/login",
-                data : formData,
-                dataType: 'json',
-                success : function(data){
-                    alert(data.message)
-                    location.href="/main"
-                },
-                error : function (data){
-                    console.log(data.toString())
-                    alert(data.message)
-                }})
 
-        })
-    </script>
+            $("#tableContent").html(tableHtml);
+            $("#page").html(pagingHtml);
+
+
+
+            $("#previous").click(function (){
+                var pre = data.page/10 ;
+                if(pre <= 0 ){
+                    alert("뒤로 갈수 없습니다.")
+                }else {
+                    location.href = URL+search+page + pre;
+                }
+            })
+            $("#next").click(function (){
+                var next = data.page/10 + 2;
+                if(next > data.length ){
+                    alert("이후 게시물이 없습니다.")
+                }else {
+                    location.href = URL+search+page + next;
+                }
+            })
+
+
+        },
+        error : function (data){
+            alert(data.message)
+        }
+    })
+
+</script>
 </html>

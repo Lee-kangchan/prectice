@@ -41,5 +41,6 @@ public class moveController {
     public String sign(){
         return "/sign";
     }
-
+    @GetMapping("/boardUpdate")
+    public String boardUpdate() {return "/boardUpdate";}
 }

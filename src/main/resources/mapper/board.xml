@@ -35,6 +35,21 @@
         LIMIT #{page}, #{board_num};
     </select>
 
+
+    <!--게시물 정보-->
+    <select id="findOneByBoardSeqAndBoardUserEmail" parameterType="Board" resultType="Board">
+        SELECT
+            board_seq AS boardSeq,
+            board_title AS boardTitle,
+            board_content AS boardContent,
+            board_created_at As boardCreateAt,
+            board_modified_at AS boardModifiedAt,
+            board_user_email AS boardUserEmail
+        FROM BOARD
+        WHERE board_seq = #{boardSeq}
+        AND board_user_email = #{boardUserEmail}
+    </select>
+
     <!--게시물 상세 조회-->
     <select id="findOneByBoardSeq" parameterType="long" resultType="Board">
         SELECT

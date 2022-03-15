@@ -40,10 +40,61 @@
             big_comment_comment_seq AS bigCommentCommentSeq,
             big_comment_user_email AS bigCommentUserEmail
         FROM BIG_COMMENT
-        WHERE big_comment_comment_seq = #{comment_seq};
+        WHERE big_comment_comment_seq = #{commentSeq};
     </select>
     <!--대댓글 삭제-->
     <delete id="deleteBigCommentByBigCommentSeq" parameterType="BigComment">
         DELETE FROM BIG_COMMENT WHERE big_comment_seq = #{bigCommentSeq}
     </delete>
+    <!-- 댓글 존재 확인-->
+    <select id="findOneCommentByCommentSeq" parameterType="long" resultType="Comment">
+        SELECT
+            comment_seq AS commentSeq,
+            comment_content AS commentContent,
+            comment_created_at AS commentCreatedAt,
+            comment_modified_at AS commentModifiedAt,
+            comment_comment_seq AS commentCommentSeq,
+            comment_user_email AS commentUserEmail
+        FROM COMMENT
+        WHERE comment_seq = #{commentSeq};
+    </select>
+    <!-- 댓글 권한 확인-->
+    <select id="findOneCommentByCommentSeqAndCommentUserEmail" parameterType="Comment" resultType="Comment">
+        SELECT
+            comment_seq AS commentSeq,
+            comment_content AS commentContent,
+            comment_created_at AS commentCreatedAt,
+            comment_modified_at AS commentModifiedAt,
+            comment_comment_seq AS commentCommentSeq,
+            comment_user_email AS commentUserEmail
+        FROM COMMENT
+        WHERE comment_seq = #{commentSeq}
+        AND comment_user_email = #{commentUserEmail}
+    </select>
+    <!-- 대댓글 존재 확인-->
+    <select id="findOneBigCommentByBigCommentSeq" parameterType="long" resultType="BigComment">
+        SELECT
+            big_comment_seq AS bigCommentSeq,
+            big_comment_content AS bigCommentContent,
+            big_comment_created_at AS bigCommentCreatedAt,
+            big_comment_modified_at AS bigCommentModifiedAt,
+            big_comment_comment_seq AS bigCommentCommentSeq,
+            big_comment_user_email AS bigCommentUserEmail
+        FROM BIG_COMMENT
+        WHERE big_comment_seq = #{bigCommentSeq};
+    </select>
+    <!-- 대댓글 권한 확인-->
+    <select id="findOneBigCommentByBigCommentSeqAndBigCommentUserEmail" parameterType="BigComment" resultType="BigComment">
+        SELECT
+            big_comment_seq AS bigCommentSeq,
+            big_comment_content AS bigCommentContent,
+            big_comment_created_at AS bigCommentCreatedAt,
+            big_comment_modified_at AS bigCommentModifiedAt,
+            big_comment_comment_seq AS bigCommentCommentSeq,
+            big_comment_user_email AS bigCommentUserEmail
+        FROM BIG_COMMENT
+        WHERE big_comment_seq = #{bigCommentSeq}
+        AND big_comment_user_email = #{bigCommentUserEmail}
+    </select>
+
 </mapper>

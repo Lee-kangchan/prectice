@@ -18,4 +18,5 @@ public interface BoardMapper {
     public Board findOneByBoardSeq(long boardSeq);
     public List<Board> findAllByLikeSearch(Map<String, Object> map);
     public int findAllLength(String search);
+    public Board findOneByBoardSeqAndBoardUserEmail(Board board);
 }

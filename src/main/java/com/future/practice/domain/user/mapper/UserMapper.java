@@ -17,5 +17,6 @@ public interface UserMapper {
     public void save(User user);
     public void updateByUserPasswordAndUserNameAndUserPhone(User user);
     public void deleteByUserEmail(User user);
+    public User findOneByPhone(User user);
 
 }

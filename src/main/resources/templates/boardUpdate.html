@@ -92,43 +92,62 @@
     </div>
 </nav>
 
-<form style="width:60%; margin:auto; margin-top:3%;" onsubmit="return false">
-    <h3 style="text-align: center;"> Board Add</h3>
-    <div class="form-group">
-        <label for="exampleFormControlInput1">Title</label>
-        <input name="title" type="text" class="form-control" id="exampleFormControlInput1" placeholder="제목">
-    </div>
-    <div class="form-group">
-        <label for="exampleFormControlTextarea1">Content</label>
-        <textarea name="content" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="내용"></textarea>
-    </div>
+<div id="mainBoard">
 
-    <button id="boardSubmit" class="btn btn-primary">Submit</button>
-</form>
+</div>
+
 
 </body>
 <script>
-    $("#boardSubmit").click(function (){
-        var content = $("textarea[name=content]").val().replace(/\n/g, "<br>");
+    function searchParam(key) {
+        return new URLSearchParams(location.search).get(key);
+    };
+    $.ajax({
+        type : "GET",
+        url : "/v1/board/"+searchParam("board_seq"),
+        dataType: 'json',
+        success : function(data){
+            var boardHtml = "" +
+                "   <form style=\"width:60%; margin:auto; margin-top:3%;\" onsubmit=\"return false\">\n" +
+                "    <h3 style=\"text-align: center;\"> Board Update</h3>\n" +
+                "    <div class=\"form-group\">\n" +
+                "        <label for=\"exampleFormControlInput1\">Title</label>\n" +
+                "        <input name=\"title\" type=\"text\" class=\"form-control\" id=\"exampleFormControlInput1\" placeholder=\"제목\" value=\""+ data.board.boardTitle +"\">\n" +
+                "    </div>\n" +
+                "    <div class=\"form-group\">\n" +
+                "        <label for=\"exampleFormControlTextarea1\">Content</label>\n" +
+                "        <textarea name=\"content\" class=\"form-control\" id=\"exampleFormControlTextarea1\" rows=\"10\" placeholder=\"내용\" >"+data.board.boardContent+"</textarea>\n" +
+                "    </div>\n" +
+                "\n" +
+                "    <button id=\"boardSubmit\" class=\"btn btn-primary\">Submit</button>\n" +
+                "</form>";
 
-        console.log(content)
-        var formData = {
-            'title' : $("input[name=title]").val(),
-            'content' : content
-        }
-        $.ajax({
-            type : "POST",
-            url : "/v1/board",
-            data : formData,
-            dataType: 'json',
-            success : function(data){
-                alert("성공하셨습니다.")
-                location.href("/main")
-            },
-            error : function (data){
-                alert(data.message)
-            }})
-    });
+            $("#mainBoard").html(boardHtml);
+            $("#boardSubmit").click(function (){
+                var content = $("textarea[name=content]").val().replace(/\n/g, "<br>");
+                var formData = {
+                    'title' : $("input[name=title]").val(),
+                    'content' : content
+                }
+                $.ajax({
+                    type : "PUT",
+                    url : "/v1/board/"+searchParam("board_seq"),
+                    data : formData,
+                    dataType: 'json',
+                    success : function(data){
+                        alert("회원 수정 성공하셨습니다.")
+                        location.href="/main";
+
+                    },
+                    error : function (data){
+                        alert(data.message)
+                    }})
+            });
+        },
+        error : function (data){
+            alert(data.message)
+        }})
+
 
 
 </script>

@@ -18,4 +18,8 @@ public interface CommentMapper {
     public void saveBigComment(BigComment bigComment);
     public List<BigComment> findAllByCommentSeq (long commentSeq);
     public void deleteBigCommentByBigCommentSeq (long bigComment);
+    public Comment findOneCommentByCommentSeq (long commentSeq);
+    public BigComment findOneBigCommentByBigCommentSeq (long bigCommentSeq);
+    public Comment findOneCommentByCommentSeqAndCommentUserEmail(Comment comment);
+    public BigComment findOneBigCommentByBigCommentSeqAndBigCommentUserEmail (BigComment bigComment);
 }

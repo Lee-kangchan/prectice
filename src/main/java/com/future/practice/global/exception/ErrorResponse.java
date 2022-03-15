@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.ToString;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-
+@ToString
 public class ErrorResponse {
 
     private LocalDateTime timestamp = LocalDateTime.now();

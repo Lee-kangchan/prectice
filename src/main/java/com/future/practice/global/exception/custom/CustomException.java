@@ -3,7 +3,6 @@ package com.future.practice.global.exception.custom;
 import com.future.practice.global.exception.ErrorCode;
 
 public class CustomException extends RuntimeException{
-    private static final long serialVersionUID = 1L;
 
     private ErrorCode errorCode;
 

@@ -29,6 +29,20 @@
         WHERE
             USER.user_email = #{userEmail}
     </select>
+
+    <!--폰번호로 회원 찾기-->
+    <select id="findOneByPhone" parameterType="User" resultType="User">
+        SELECT
+            USER.user_email AS userEmail,
+            USER.user_password AS userPassword,
+            USER.user_name AS userName,
+            USER.user_phone AS userPhone
+        FROM USER
+        WHERE
+            USER.user_phone = #{userPhone}
+    </select>
+
+
     <!--회원가입 정보 넣기 -->
     <insert id="save" parameterType="user">
         INSERT USER(user_email, user_password, user_name, user_phone)

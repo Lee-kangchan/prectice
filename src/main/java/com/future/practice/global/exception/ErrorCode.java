@@ -16,7 +16,10 @@ public enum ErrorCode {
     BOARD_NOT_FOUND(400, "게시물이 존재하지 않습니다."),
     BOARD_ALREADY_FOUND(400, "게시물이 이미 존재합니다."),
     COMMENT_NOT_FOUND(400, "댓글이 존재하지 않습니다."),
-    COMMENT_NOT_ACCESS(400, "댓글에 권한이 없습니다.");
+    COMMENT_NOT_ACCESS(400, "댓글에 권한이 없습니다."),
+    EMAIL_NOT_EXIST(400, "이메일이 존재하지 않습니다."),
+    EMAIL_PASSWORD_FAIL(400, "비밀번호가 틀립니다."),
+    PAGE_SIZE_OVER(400, "페이지 번호가 유효하지 않습니다.");
 
     private final int code;
     private final String message;
