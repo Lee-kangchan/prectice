@@ -57,7 +57,7 @@ public class UserController {
     @PutMapping("")
     public ResponseEntity<ResponseDefaultDto> updateUser( UserDto.Inform informDto, HttpSession session){
             log.info("update User");
-            if (session == null) throw new UserAlreadyExistException();
+            if (session.getAttribute("user") == null) throw new UserAlreadyExistException();
 
             userService.updateService(informDto, ((User) session.getAttribute("user")).getUserEmail());
             HttpHeaders headers = new HttpHeaders();
@@ -77,16 +77,12 @@ public class UserController {
 
     @DeleteMapping("")
     public ResponseEntity<ResponseDefaultDto> deleteUser(HttpSession session){
-        try {
-            if(session==null) throw new UserAlreadyExistException();
+            if(session.getAttribute("user")==null) throw new UserAlreadyExistException();
             userService.deleteService(((User) session.getAttribute("user")).getUserEmail());
-
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_USER_DELETE_MESSAGE).build());
-        }catch (Exception e){
-            throw new ServerErrorException();
-        }
+
     }
 }

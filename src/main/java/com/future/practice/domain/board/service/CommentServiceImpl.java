@@ -11,6 +11,7 @@ import com.future.practice.global.exception.custom.CommentNotAccessException;
 import com.future.practice.global.exception.custom.CommentNotFountException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,16 +20,19 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final BoardMapper boardMapper;
     @Override
+    @Transactional
     public void insertComment(CommentDto commentDto, long boardSeq, User user) {
         if(boardMapper.findOneByBoardSeq(boardSeq)==null) throw new BoardNotFoundException();
         commentMapper.saveComment(commentDto.toCommentEntity(boardSeq, user.getUserEmail()));
     }
     @Override
+    @Transactional
     public void insertBigComment(CommentDto commentDto, long commentSeq, User user) {
         if(commentMapper.findOneCommentByCommentSeq(commentSeq)==null) throw  new CommentNotFountException();
         commentMapper.saveBigComment(commentDto.toBigCommentEntity(commentSeq, user.getUserEmail()) );
     }
     @Override
+    @Transactional
     public void deleteComment(long commentSeq, User user) {
         if(commentMapper.findOneCommentByCommentSeq(commentSeq) ==null) throw new CommentNotFountException();
         if(commentMapper.findOneCommentByCommentSeqAndCommentUserEmail(Comment.builder().commentSeq(commentSeq).commentUserEmail(user.getUserEmail()).build()) == null){
@@ -37,10 +41,11 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.deleteCommentByCommentSeq(commentSeq);
     }
     @Override
+    @Transactional
     public void deleteBigComment(long bigCommentSeq, User user) {
         if(commentMapper.findOneBigCommentByBigCommentSeq(bigCommentSeq)== null) throw new CommentNotFountException();
         if(commentMapper.findOneBigCommentByBigCommentSeqAndBigCommentUserEmail(BigComment.builder().bigCommentSeq(bigCommentSeq).bigCommentUserEmail(user.getUserEmail()).build()) == null)
-            throw new CommentNotFountException();
+            throw new CommentNotAccessException();
         commentMapper.deleteBigCommentByBigCommentSeq(bigCommentSeq);
     }
 }

@@ -28,70 +28,54 @@ public class CommentController {
     public ResponseEntity<ResponseDefaultDto> insertComment(@PathVariable("board_seq") int board_seq,
                                                             CommentDto commentDto,
                                                                         HttpSession session){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             commentService.insertComment(commentDto, board_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_COMMENT_INSERT_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
     @PostMapping("/comment/{comment_seq}")
     public ResponseEntity<ResponseDefaultDto>  insertBigComment(@PathVariable("comment_seq") int comment_seq,
                                                                 CommentDto commentDto,
                                                                 HttpSession session){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             commentService.insertBigComment(commentDto, comment_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BIG_COMMENT_INSERT_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
     @DeleteMapping("/comment/{comment_seq}")
     public ResponseEntity<ResponseDefaultDto>  deleteComment(@PathVariable("comment_seq") int comment_seq
                                                             ,HttpSession session){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             commentService.deleteComment(comment_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_COMMENT_DELETE_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
     @DeleteMapping("/bigComment/{big_comment_seq}")
     public ResponseEntity<ResponseDefaultDto>  deleteBigComment(@PathVariable("big_comment_seq") int big_comment_seq
                                                                 ,HttpSession session){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             commentService.deleteBigComment(big_comment_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BIG_COMMENT_DELETE_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
 }

@@ -53,7 +53,7 @@
             comment_content AS commentContent,
             comment_created_at AS commentCreatedAt,
             comment_modified_at AS commentModifiedAt,
-            comment_comment_seq AS commentCommentSeq,
+            comment_board_seq AS commentBoardSeq,
             comment_user_email AS commentUserEmail
         FROM COMMENT
         WHERE comment_seq = #{commentSeq};
@@ -65,7 +65,7 @@
             comment_content AS commentContent,
             comment_created_at AS commentCreatedAt,
             comment_modified_at AS commentModifiedAt,
-            comment_comment_seq AS commentCommentSeq,
+            comment_board_seq AS commentBoardSeq,
             comment_user_email AS commentUserEmail
         FROM COMMENT
         WHERE comment_seq = #{commentSeq}

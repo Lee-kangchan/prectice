@@ -31,79 +31,57 @@ public class BoardController {
     private final BoardService boardService;
     @PostMapping("")
     public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session,BoardDto boardDto){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             boardService.insertBoardService(boardDto, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_INSERT_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
     @PutMapping("/{board_seq}")
     public ResponseEntity<ResponseDefaultDto> updateBoard(HttpSession session, @PathVariable("board_seq") int board_seq
                             ,BoardDto boardDto){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             boardService.updateBoardService(boardDto, board_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_UPDATE_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
     @DeleteMapping("/{board_seq}")
     public ResponseEntity<ResponseDefaultDto> deleteBoard(HttpSession session, @PathVariable("board_seq") int board_seq){
-        try {
-            if (session == null) throw new UserNotExistException();
+            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
             boardService.deleteBoardService(board_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_DELETE_MESSAGE).build());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
     }
 
     @GetMapping("")
     public ResponseEntity<ResponseBoardDto> selectBoard(@RequestParam Map<String, Object> map){
-        try {
             HttpHeaders headers = new HttpHeaders();
             ResponseBoardDto responseBoardDto;
             if (map.get("search") == null) responseBoardDto = boardService.selectBoardService(map);
             else responseBoardDto = boardService.selectSearchBoardService(map);
             return ResponseEntity.ok()
                     .headers(headers).body(responseBoardDto);
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
+
     }
 
     @GetMapping("/{board_seq}")
     public ResponseEntity<ResponseBoardDetailDto> selectBoardDetail(@PathVariable("board_seq") int board_seq){
-        try {
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(boardService.selectBoardDetailService(board_seq));
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ServerErrorException();
-        }
     }
 
 }

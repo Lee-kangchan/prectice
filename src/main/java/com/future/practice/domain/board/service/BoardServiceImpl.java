@@ -15,6 +15,7 @@ import com.future.practice.global.exception.custom.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,14 @@ public class BoardServiceImpl implements BoardService {
     private final BoardMapper boardMapper;
     private final CommentMapper commentMapper;
     @Override
+    @Transactional
     public void insertBoardService(BoardDto boardDto, User user ) {
         if(boardDto.getTitle().equals("")) throw new BoardTitleNotExistException(); // 게시물 제목 없을 시
         if(boardDto.getContent().equals("")) throw new BoardContentNotExistException(); // 게시물 내용 없을 시
         boardMapper.save(boardDto.toEntity(user.getUserEmail()));
     }
     @Override
+    @Transactional
     public void updateBoardService(BoardDto boardDto, long boardSeq, User user) {
         if(boardDto.getTitle().equals("")) throw new BoardTitleNotExistException(); // 게시물 제목 없을 시
         if(boardDto.getContent().equals("")) throw new BoardContentNotExistException(); // 게시물 내용 없을 시
@@ -40,6 +43,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public void deleteBoardService(long boardSeq, User user) {
         Board board = Board.builder().boardSeq(boardSeq).boardUserEmail(user.getUserEmail()).build();
         if(boardMapper.findOneByBoardSeq(boardSeq)==null ) throw new BoardNotFoundException(); // 게시물 존재 X
@@ -92,9 +96,11 @@ public class BoardServiceImpl implements BoardService {
         map.put("board_num", Common.BOARD_NUM);
         if(map.get("page") ==null) map.put("page",1);
         map.put("page", (Integer.parseInt(map.get("page").toString())-1 )* Common.BOARD_NUM);
+        List<Board> boardList = boardMapper.findAllByLikeSearch(map);
+        if(boardList.size()==0) throw new BoardNotFoundException(); // 게시물이 존재하지 않음
         return ResponseBoardDto
                 .builder()
-                .board(boardMapper.findAllByLikeSearch(map))
+                .board(boardList)
                 .page((int)map.get("page")) // Integer.parseInt(map.get("page").toString)
                 .length(boardMapper.findAllLength(map.get("search").toString()))
                 .build();

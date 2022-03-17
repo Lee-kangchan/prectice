@@ -64,7 +64,7 @@
                                     location.href="/main?search="+formData.search
                                 },
                                 error : function (data){
-                                    alert(data.message)
+                                    alert(data.responseJSON.message)
                                 }})
 
                         })
@@ -158,7 +158,7 @@
 
             },
             error : function (data){
-                alert(data.message)
+                alert(data.responseJSON.message)
             }
         })
 
