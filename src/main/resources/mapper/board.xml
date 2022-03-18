@@ -6,81 +6,94 @@
 
     <!--게시물 추가-->
     <insert id="save" parameterType="Board">
-        INSERT BOARD(board_title, board_content, board_user_email, board_created_at, board_modified_at)
-        VALUES (#{boardTitle}, #{boardContent}, #{boardUserEmail}, #{boardCreatedAt}, #{boardModifiedAt})
+        INSERT
+        BOARD(board_title,
+            board_content,
+            board_user_email,
+            board_created_at,
+            board_modified_at)
+        VALUES (
+        #{boardTitle},
+        #{boardContent},
+        #{boardUserEmail},
+        #{boardCreatedAt},
+        #{boardModifiedAt}
+        )
     </insert>
 
     <!--게시물 변경-->
     <update id="updateByBoardSeq" parameterType="Board">
-        UPDATE BOARD set board_title = #{boardTitle}, board_content = #{boardContent}, board_modified_at = #{boardModifiedAt}
+        UPDATE BOARD
+        set board_title       = #{boardTitle},
+            board_content     = #{boardContent},
+            board_modified_at = #{boardModifiedAt}
         WHERE board_seq = #{boardSeq}
     </update>
 
     <!--게시물 삭제-->
     <delete id="deleteByBoardSeq" parameterType="long">
-        DELETE FROM BOARD WHERE board_seq = #{boardSeq}
+        DELETE
+        FROM BOARD
+        WHERE board_seq = #{boardSeq}
     </delete>
 
     <!--게시물 조회-->
     <select id="findAll" parameterType="int" resultType="Board">
-        SELECT
-            board_seq AS boardSeq,
-            board_title AS boardTitle,
-            board_content AS boardContent,
-            board_created_at As boardCreateAt,
-            board_modified_at AS boardModifiedAt,
-            board_user_email AS boardUserEmail
+        SELECT board_seq         AS boardSeq,
+               board_title       AS boardTitle,
+               board_content     AS boardContent,
+               board_created_at  As boardCreateAt,
+               board_modified_at AS boardModifiedAt,
+               board_user_email  AS boardUserEmail
         FROM BOARD
         ORDER BY board_modified_at DESC
-        LIMIT #{page}, #{board_num};
+            LIMIT #{page}, #{board_num};
     </select>
 
 
     <!--게시물 정보-->
     <select id="findOneByBoardSeqAndBoardUserEmail" parameterType="Board" resultType="Board">
-        SELECT
-            board_seq AS boardSeq,
-            board_title AS boardTitle,
-            board_content AS boardContent,
-            board_created_at As boardCreateAt,
-            board_modified_at AS boardModifiedAt,
-            board_user_email AS boardUserEmail
+        SELECT board_seq         AS boardSeq,
+               board_title       AS boardTitle,
+               board_content     AS boardContent,
+               board_created_at  As boardCreateAt,
+               board_modified_at AS boardModifiedAt,
+               board_user_email  AS boardUserEmail
         FROM BOARD
         WHERE board_seq = #{boardSeq}
-        AND board_user_email = #{boardUserEmail}
+          AND board_user_email = #{boardUserEmail}
     </select>
 
     <!--게시물 상세 조회-->
     <select id="findOneByBoardSeq" parameterType="long" resultType="Board">
-        SELECT
-            board_seq AS boardSeq,
-            board_title AS boardTitle,
-            board_content AS boardContent,
-            board_created_at As boardCreateAt,
-            board_modified_at AS boardModifiedAt,
-            board_user_email AS boardUserEmail
+        SELECT board_seq         AS boardSeq,
+               board_title       AS boardTitle,
+               board_content     AS boardContent,
+               board_created_at  As boardCreateAt,
+               board_modified_at AS boardModifiedAt,
+               board_user_email  AS boardUserEmail
         FROM BOARD
         WHERE board_seq = #{boardSeq}
     </select>
 
     <!--게시물 검색 조회-->
     <select id="findAllByLikeSearch" parameterType="map" resultType="Board">
-        SELECT
-            board_seq AS boardSeq,
-            board_title AS boardTitle,
-            board_content AS boardContent,
-            board_created_at As boardCreateAt,
-            board_modified_at AS boardModifiedAt,
-            board_user_email AS boardUserEmail
+        SELECT board_seq         AS boardSeq,
+               board_title       AS boardTitle,
+               board_content     AS boardContent,
+               board_created_at  As boardCreateAt,
+               board_modified_at AS boardModifiedAt,
+               board_user_email  AS boardUserEmail
         FROM BOARD
-        WHERE board_title LIKE CONCAT("%",#{search},"%")
+        WHERE board_title LIKE CONCAT("%", #{search}, "%")
         ORDER BY board_modified_at DESC
-        LIMIT #{page}, #{board_num};
+            LIMIT #{page}, #{board_num};
     </select>
 
     <!--게시물 총 갯수-->
     <select id="findAllLength" parameterType="String" resultType="int">
-        SELECT CEILING(COUNT(board_seq)/10) AS length FROM mydb.BOARD
-        where board_title like concat("%", #{search},"%")
+        SELECT CEILING(COUNT(board_seq) / 10) AS length
+        FROM mydb.BOARD
+        where board_title like concat("%", #{search}, "%")
     </select>
 </mapper>

@@ -1,0 +1,55 @@
+<div id="mainBoard" style="width: 80%; margin: auto; margin-top: 2%;">
+    <div id="board">
+        <h3>he23432llo</h3>
+        <span>작성자 :abc@naver.com </span> <span>날짜 : 2022-03-11</span>
+        <hr>
+        <p>wo5v2343rsld</p>
+
+        <button type="button" style="visibility: hidden" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> 좋아요
+        </button>
+        <button id="boardDelete" type="button" class="btn text-white"
+                style="background-color: red;float: right; margin-left: 5px"> 삭제하기 <span
+                class="glyphicon glyphicon-share-alt"></span></button>
+        <a href="/boardUpdate?board_seq=10">
+            <button type="button" class="btn text-white" style="background-color: green;float: right">수정하기</button>
+        </a>
+    </div>
+    <hr>
+    <h3>댓글</h3>
+    <hr>
+
+    <div id="comment">
+        <div class="card">
+            <div class="card-header">
+                <span>회원 : abc@naver.com</span><small style="float: right;"> 날짜 : 2022-03-11T12:40:45</small>
+            </div>
+            <div class="card-body">
+                <div style="float: left; width: 70%; margin-bottom: 20px"><span class="card-text">가나다라</span></div>
+                <button style="float: right;" type="button" class="btn btn-default commentDelete"> 삭제
+                    <span class="glyphicon glyphicon-share-alt"></span></button>
+                <input style="visibility: hidden; display: none;" type="text" value="2">
+                <button style="float: right;" type="button" class="btn btn-default commentAnswer"> 답장</button>
+                <div style="visibility: hidden; display: none;">
+                    <input style="width:80%; float: left;" type="text" class="form-control" id="answerData"
+                           name="comment" aria-describedby="emailHelp">
+                    <button style="float: right;" type="submit" class="btn btn-primary answerButton">Submit</button>
+                    <input style="visibility: hidden; display: none;" type="text" value="2">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div style="float: left; width: 70%;"><span class="card-text">ㄴ하하하</span>
+                        <p><span style="font-size: small"> 작성자 : abc@naver.com 날짜 2022-03-11T12:43:11</span></p></div>
+                    <button style="float: right;" type="button" class="btn btn-default bigCommentDelete"> 삭제 <span
+                            class="glyphicon glyphicon-share-alt"></span></button>
+                    <input style="visibility: hidden; display: none;" type="text" value="2"></div>
+            </div>
+        </div>
+        <hr>
+
+
+        <input style="width:90%; float: left;" type="text" class="form-control" id="exampleInputEmail1"
+               aria-describedby="emailHelp">
+        <button style="float: right;" class="btn btn-primary" id="commentSubmit">Submit</button>
+    </div>
+</div>

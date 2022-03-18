@@ -43,4 +43,8 @@ public class moveController {
     }
     @GetMapping("/boardUpdate")
     public String boardUpdate() {return "/boardUpdate";}
+    @GetMapping("/test/main")
+    public String testMain() {
+        return "/vue/boardSpa";
+    }
 }
