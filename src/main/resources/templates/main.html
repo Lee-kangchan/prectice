@@ -69,127 +69,32 @@
                   </tr>
                   </thead>
                   <tbody id="tableContent">
+                    <tr v-for='(item, index) in boards' @click="getBoard(item.boardSeq)"  v-bind:key = "item.boardSeq">
+                        <th scope="col" colspan="1"> {{item.boardSeq}}</th>
+                        <td scope="col" colspan="5"><a style="color:black;text-decoration-line: none" >{{item.boardTitle}}</a></td>
+                        <td scope="col" colspan="2"> {{item.boardModifiedAt}} </td>
+                        <td scope="col" colspan="1">{{item.boardUserEmail}}</td>
+                    </tr>
                   </tbody>
               </table>
-              <nav aria-label="Page navigation example" id="page" style="display: flex;"></nav>
+              <nav aria-label="Page navigation example" id="page" style="display: flex;">
+                  <ul class="pagination" style="margin: auto;">
+                      <li class="page-item"><a id="previous" class="page-link" href="#" @click="getPrevious()">Previous</a></li>
+                      <li v-for='(item, index) in pages' v-bind:key = "item.num" class="page-item" @click="getNumber(item.num)"><a class="page-link" href="#"> {{item.num}} </a></li>
+                      <li class="page-item"><a id="next" class="page-link" href="#" @click="getNext()" >Next</a></li>
+                  </ul>
+
+              </nav>
 
               <a th:if="${session.user != null}" href="/boardAdd"><button style="float: right;"type="submit" class="btn btn-primary">게시판 추가</button></a>
         </div>
     </body>
     <script>
-        var searchView = new Vue({
-            el : '#search',
-            methods: {
-                getSearch : function () {
-                    $.ajax({
-                        type : "GET",
-                        url : "/v1/board?search="+$("input[name=search]").val(),
-                        dataType: 'json',
-                        success : function(data){
-                            location.href="/main?search="+$("input[name=search]").val()
-                        },
-                        error : function (data){
-                            alert(data.responseJSON.message)
-                        }})
-                }
-            }
-        })
+
+
         function searchParam(key) {
             return new URLSearchParams(location.search).get(key);
         };
-
-        Vue.component('board-body',{
-            props: {
-                board : Object
-            },
-            template:
-                "    <tr v-for='item in board'>\n" +
-                "        <th scope=\"col\" colspan=\"1\"> {{item.boardSeq}}</td>\n" +
-                "        <td scope=\"col\" colspan=\"5\"><a style=\"color:black;text-decoration-line: none \"href='/mainDetail?board_seq=" +item.boardSeq+ "'>{{item.boardTitle}}</a></td>\n" +
-                "        <td scope=\"col\" colspan=\"2\"> {{item.boardModifiedAt}} </td>\n" +
-                "        <td scope=\"col\" colspan=\"1\">{{item.boardUserEmail}}</td>\n" +
-                "    </tr>\n"
-        })
-        Vue.component('board-tail',{
-            props: {
-                page : String,
-                URL : String,
-                Search : String,
-                length : int,
-            },
-            template: "    <tr>\n" +
-                "        <th scope=\"col\" colspan=\"1\"> {{item.boardSeq}}</td>\n" +
-                "        <td scope=\"col\" colspan=\"5\"><a style=\"color:black;text-decoration-line: none \"href='/mainDetail?board_seq=" +item.boardSeq+ "'>{{item.boardTitle}}</a></td>\n" +
-                "        <td scope=\"col\" colspan=\"2\"> {{item.boardModifiedAt}} </td>\n" +
-                "        <td scope=\"col\" colspan=\"1\">{{item.boardUserEmail}}</td>\n" +
-                "    </tr>\n"
-        })
-
-        var mainboard = new Vue({
-            el : '#mainboard',
-            data : {
-                searchData : searchData != null ? "search="+searchData+"&" : null,
-                pageData : pageData == null ? 1 : searchParam("page"),
-                URL : "/main?",
-                page : "page=",
-            },
-            created(){
-                $.ajax({
-                    type : "GET",
-                    url : "/v1/board?"+search+page+pageData,
-                    dataType: 'json',
-                    success : async function(data){
-                        console.log(data.toString())
-                        var tableHtml = "";
-                        await data.board.forEach(function(item, index){
-                            tableHtml +="    <tr>\n" +
-                                "        <th scope=\"col\" colspan=\"1\">"+ item.boardSeq +"</td>\n" +
-                                "        <td scope=\"col\" colspan=\"5\"><a style=\"color:black;text-decoration-line: none \"href='/mainDetail?board_seq=" +item.boardSeq+ "'>"+ item.boardTitle +"</a></td>\n" +
-                                "        <td scope=\"col\" colspan=\"2\">"+ item.boardModifiedAt.split("T")[0] +"</td>\n" +
-                                "        <td scope=\"col\" colspan=\"1\">"+item.boardUserEmail+"</td>\n" +
-                                "    </tr>\n";
-                        });
-                        var startPage = Math.floor( data.page/50 ) *5;
-                        pagingHtml= "<ul class=\"pagination\" style=\"margin: auto;\">\n" +
-                            "            <li class=\"page-item\"><a id=\"previous\" class=\"page-link\" href=\"#\">Previous</a></li>\n"
-                        for(var i=startPage+1 ; i <= startPage+5; i++){
-                            if(i > data.length) break;
-                            pagingHtml += "<li class=\"page-item\"><a class=\"page-link\" href=\""+URL+search+page+i +"\">"+i +"</a></li>\n"
-                        }
-                        pagingHtml += " <li class=\"page-item\"><a id=\"next\" class=\"page-link\" href=\"#\">Next</a></li></ul>"
-
-
-                        $("#tableContent").html(tableHtml);
-                        $("#page").html(pagingHtml);
-
-
-
-                        $("#previous").click(function (){
-                            var pre = data.page/10 ;
-                            if(pre <= 0 ){
-                                alert("뒤로 갈수 없습니다.")
-                            }else {
-                                location.href = URL+search+page + pre;
-                            }
-                        })
-                        $("#next").click(function (){
-                            var next = data.page/10 + 2;
-                            if(next > data.length ){
-                                alert("이후 게시물이 없습니다.")
-                            }else {
-                                location.href = URL+search+page + next;
-                            }
-                        })
-
-
-                    },
-                    error : function (data){
-                        alert(data.responseJSON.message)
-                    }
-                })
-            }
-        })
-
 
         var searchData = searchParam("search");
         var pageData = searchParam("page");
@@ -200,5 +105,99 @@
         if(pageData == null) pageData =1;
 
 
+        var searchPage = new Vue({
+            el : '#search',
+            props : ['searchData'],
+            methods: {
+                getSearch : function () {
+                    $.ajax({
+                        type : "GET",
+                        url : "/v1/board?search="+this.searchData,
+                        dataType: 'json',
+                        success : function(data){
+                            location.href="/main?search="+this.searchData
+                        },
+                        error : function (data){
+                            alert(data.responseJSON.message)
+                        }
+                    })
+                }
+            }
+        })
+
+        var mainBoard = new Vue({
+            el : '#mainTable',
+            data : {
+                searchData : searchData != null ? "search="+searchData+"&" : null,
+                pageData : pageData == null ? 1 : searchParam("page"),
+                URL : "/main?",
+                page : "page=",
+                length : 1,
+                pageNum : 1,
+                boards : [],
+                pages : []
+            },
+            mounted: function(){
+                var _this = this;
+                _this.getList();
+            },
+            methods: {
+                getList : function () {
+                    var _this = this;
+                    $.ajax({
+                        type : "GET",
+                        url : "/v1/board?"+search+page+pageData,
+                        dataType: 'json',
+                        success : async function(data){
+                            _this.boards = data.board;
+
+                            var startPage = Math.floor( data.page/50 ) *5;
+                            var pages = [];
+                            for(var i=startPage+1 ; i <= startPage+5; i++){
+                                if(i > data.length) break;
+                                pages.push({
+                                    num : i
+                                })
+                            }
+                            _this.pageNum = data.page;
+                            _this.length = data.length;
+                            _this.pages = pages;
+                        },
+                        error : function (data){
+                            alert(data.responseJSON.message)
+                        }
+                    })
+                },
+                getPrevious : function (){
+                    var _this = this;
+                    var pre = _this.pageNum/10 ;
+                    if(pre <= 0 ){
+                        alert("뒤로 갈수 없습니다.")
+                    }else {
+                        location.href = URL+search+page + pre;
+                    }
+                },
+
+                getNext : function (){
+                    var _this = this;
+                    var next = _this.pageNum/10 + 2;
+                    if(next > _this.length ){
+                        alert("이후 게시물이 없습니다.")
+                    }else {
+                        location.href = URL+search+page + next;
+                    }
+                },
+                getNumber : function (pageNumber){
+                    location.href = URL+search+page + pageNumber;
+                },
+                getBoard : function (boardNumber){
+                    location.href = "/mainDetail?board_seq=" + boardNumber;
+                }
+            }
+        })
+
+
+
     </script>
 </html>
+
