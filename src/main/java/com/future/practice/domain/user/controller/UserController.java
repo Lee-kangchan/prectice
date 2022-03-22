@@ -5,15 +5,10 @@ import com.future.practice.domain.user.service.UserService;
 import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.User;
-import com.future.practice.global.exception.ErrorCode;
-import com.future.practice.global.exception.custom.CustomException;
-import com.future.practice.global.exception.custom.ServerErrorException;
 import com.future.practice.global.exception.custom.UserAlreadyExistException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +29,7 @@ public class UserController {
         if(session.getAttribute("user")!=null)  throw new UserAlreadyExistException();
             User user = userService.loginService(loginDto);
             session.setAttribute("user", user); //session
-            log.info("loginDto email : " + loginDto.getEmail() + " password :" + loginDto.getPassword());
+
             //token 생성, Session 생성
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()

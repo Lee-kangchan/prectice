@@ -47,7 +47,7 @@
                 <ul class="navbar-nav mr-auto">
                     <form id="search" class="form-inline my-2 my-lg-0" onsubmit="return false">
                         <input v-model = "searchData" class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
-                        <button v-on:click="getSearch" id="searchSubmit" class="btn btn-outline-success my-2 my-sm-0" onsubmit="return false">Search</button>
+                        <button @click="getSearch()" id="searchSubmit" class="btn btn-outline-success my-2 my-sm-0" onsubmit="return false">Search</button>
                     </form>
                 </ul>
                 <ul class="navbar-nav">
@@ -67,23 +67,28 @@
             <div id="comment">
                 <div class="card" v-for='(item2, index2) in comments' v-bind:key = "item2.commentSeq" >
                     <div class="card-header">
-                        <span>회원 : {{item2.userEmail}} </span><small style="float: right;"> 날짜 : </small>
+                        <span>회원 : {{ item2.comment.commentUserEmail }} </span><small style="float: right;"> 날짜 : {{ item2.comment.commentModifiedAt.replace("T",":")}}</small>
                     </div>
                     <div class="card-body">
-                        <div style="float: left; width: 70%; margin-bottom: 20px"  ><span  class="card-text"></span></div>
-                        <button style="float: right;" type="button" class="btn btn-default commentDelete"> 삭제 <span class="glyphicon glyphicon-share-alt"></span></button>
+                        <div style="float: left; width: 70%; margin-bottom: 30px"  ><span  class="card-text"> {{ item2.comment.commentContent }}</span></div>
+                        <button @click="getCommentDelete(item2.comment.commentSeq)" style="float: right;" type="button" class="btn btn-default commentDelete"> 삭제 <span class="glyphicon glyphicon-share-alt"></span></button>
                         <input style="visibility: hidden; display: none;" type="text" value="">
-                        <button style="float: right;" type="button" class="btn btn-default commentAnswer"> 답장 <span class="glyphicon glyphicon-share-alt"></span></button>
-                        <div style="visibility: hidden; display: none;" >
-                            <input style="width:80%; float: left;" type="text" class="form-control" id="answerData" name="comment" aria-describedby="emailHelp">
-                            <button style="float: right;"type="submit" class="btn btn-primary answerButton">Submit</button>
-                            <input style="visibility: hidden; display: none;" type="text" value="">
+                        <button @click = "getCommentAnswer(index2)" style="float: right;" type="button" class="btn btn-default commentAnswer"> 답장 <span class="glyphicon glyphicon-share-alt"></span></button>
+                        <div ref="commentAnswer" class="commentAnswer" style="visibility: hidden; display: none">
+                            <hr style="padding: 0px;clear:both;"/>
+                            <input v-model="insertBigComment" style="width:80%; float: left;" type="text" class="form-control" id="answerData" name="comment" aria-describedby="emailHelp">
+                            <button @click="getBigCommentInsert(item2.comment.commentSeq)" style="float: right;"type="submit" class="btn btn-primary answerButton">Submit</button>
+                            <input  style="visibility: hidden; display: none;" type="text" value="">
                         </div>
                     </div>
-                    <div v-for='(item3, index3) in item2.bigComment' class="card-body">
-                        <div style="float: left; width: 70%;" ><span  class="card-text">ㄴ 댓글 작성</span> <p><span style='font-size: small'> 작성자 날짜</span></p></div>
-                        <button style="float: right;" type="button" class="btn btn-default bigCommentDelete"> 삭제 <span class="glyphicon glyphicon-share-alt"></span></button>
-                        <input style="visibility: hidden; display: none;" type="text" value="hhh">
+                    <hr style="clear:both">
+                    <div v-for='(item3, index3) in item2.bigComments' class="card-body">
+                        <div style="float: left; width: 70%;" >
+                            <span  class="card-text">ㄴ 댓글 {{ item3.bigCommentContent }}</span>
+                            <p><span style='font-size: small'> 작성자 {{ item3.bigCommentUserEmail }} 날짜 {{item3.bigCommentModifiedAt.replace("T",":")}}</span></p>
+                        </div>
+                        <button @click="getBigCommentDelete(item3.bigCommentSeq)" style="float: right;" type="button" class="btn btn-default bigCommentDelete"> 삭제 <span class="glyphicon glyphicon-share-alt"></span></button>
+                        <input style="visibility: hidden; display: none;" type="text" value="hhh" >
                     </div>
                 </div>
 
@@ -92,7 +97,7 @@
 
             
               <input v-model="insertComment" style="width:90%; float: left;" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-              <button @click="getCommentSubmit" style="float: right;" class="btn btn-primary" id="commentSubmit">Submit</button>
+              <button @click="getCommentSubmit()" style="float: right;" class="btn btn-primary" id="commentSubmit">Submit</button>
           </div>
     </body>
     <script>
@@ -107,9 +112,28 @@
                 "                <span>작성자 : {{ user }}</span> <span>날짜: {{ modified }}</span>\n" +
                 "                <hr>\n" +
                 "                <p>{{ content }}</p>\n" +
-                "                <button id=\"boardDelete\" type=\"button\" class=\"btn text-white\" style=\"background-color: red;float: right; margin-left: 5px\"> 삭제하기 <span class=\"glyphicon glyphicon-share-alt\"></span></button>\n" +
-                "                <a href='boardUpdate?board_seq='><button type=\"button\" class=\"btn text-white\" style=\"background-color: green;float: right\">수정하기</button></a>\n" +
-                "            </div>"
+                "                <button @click= \"getBoardDelete()\" id=\"boardDelete\" type=\"button\" class=\"btn text-white\" style=\"background-color: red;float: right; margin-left: 5px\"> 삭제하기 <span class=\"glyphicon glyphicon-share-alt\"></span></button>\n" +
+                "                <a @click= \"getBoardUpdate()\" ><button type=\"button\" class=\"btn text-white\" style=\"background-color: green;float: right\">수정하기</button></a>\n" +
+                "            </div>",
+            methods :{
+                getBoardUpdate : function (){
+                    location.href='boardUpdate?board_seq='+searchParam("board_seq")
+                },
+                getBoardDelete : function (){
+                    $.ajax({
+                        type : "DELETE",
+                        url : "/v1/board/"+searchParam("board_seq"),
+                        dataType: 'json',
+                        success : function(data){
+                            alert(data.message)
+                            location.href="/main";
+                        },
+                        error : function (data){
+                            alert(data.responseJSON.message)
+                        }
+                    })
+                }
+            }
         })
         var mainBoard = new Vue({
             el : '#mainBoard',
@@ -118,9 +142,13 @@
                 contentData : "",
                 modifiedAtData : "",
                 userEmailData : "",
-                comments : []
+                comments : [],
+                styleObject : {
+                    visibility : 'hidden',
+                    display : 'none'
+                }
             },
-            props: ['insertComment'],
+            props: ['insertComment', 'insertBigComment'],
             mounted: function(){
                 var _this = this;
                 _this.getBoard();
@@ -133,15 +161,12 @@
                         url : "/v1/board/"+searchParam("board_seq"),
                         dataType: 'json',
                         success : async function(data){
-
                             mainBoard.comments = data.commentAll;
                             _this.comments = data.commentAll;
                             mainBoard.titleData = data.board.boardTitle;
                             mainBoard.contentData = data.board.boardContent;
                             mainBoard.modifiedAtData = data.board.boardModifiedAt;
                             mainBoard.userEmailData = data.board.boardUserEmail;
-                            console.log(_this.commetAll);
-
                         },
                         error : function (data){
                             alert(data.responseJSON.message)
@@ -164,20 +189,72 @@
                             alert(data.responseJSON.message)
                         }
                     })
+                },
+                getCommentAnswer : function (index){
+                    this.$refs.commentAnswer[index].style.visibility = 'visible'
+                    this.$refs.commentAnswer[index].style.display = ''
+                },
+                getBigCommentInsert : function (seq){
+                        var formData = {
+                            'content' : this.insertBigComment
+                        }
+                        $.ajax({
+                            type : "POST",
+                            url : "/v1/comment/"+seq,
+                            data : formData,
+                            dataType: 'json',
+                            success : function(data){
+                                alert(data.message)
+                                location.href="/mainDetail?board_seq="+searchParam("board_seq");
+                            },
+                            error : function (data){
+                                alert(data.responseJSON.message)
+                            }
+                        })
+                },
+                getCommentDelete : function (seq){
+                    $.ajax({
+                        type : "DELETE",
+                        url : "/v1/comment/"+seq ,
+                        dataType: 'json',
+                        success : function(data) {
+                            alert(data.message)
+                            location.href = "/mainDetail?board_seq="+searchParam("board_seq");
+                        },
+                        error : function (data){
+                            alert(data.responseJSON.message)
+                        }
+                    })
+                },
+                getBigCommentDelete : function (seq){
+                    $.ajax({
+                        type : "DELETE",
+                        url : "/v1/bigComment/"+seq ,
+                        dataType: 'json',
+                        success : function(data) {
+                            alert(data.message)
+                            location.href = "/mainDetail?board_seq="+searchParam("board_seq");
+                        },
+                        error : function (data){
+                            alert(data.responseJSON.message)
+                        }
+                    })
                 }
             }
         })
+
         var searchPage = new Vue({
             el : '#search',
             props : ['searchData'],
             methods: {
                 getSearch : function () {
+                    var _this = this;
                     $.ajax({
                         type : "GET",
                         url : "/v1/board?search="+this.searchData,
                         dataType: 'json',
                         success : function(data){
-                            location.href="/main?search="+this.searchData
+                            location.href="/main?search="+_this.searchData
                         },
                         error : function (data){
                             alert(data.responseJSON.message)
@@ -189,114 +266,3 @@
     </script>
 
 </html>
-
-
-<script>
-
-    // $.ajax({
-    //     type : "GET",
-    //     url : "/v1/board/"+searchParam("board_seq"),
-    //     dataType: 'json',
-    //     success : async function(data){
-    //
-    //         $("#boardDelete").click(function (){
-    //             $.ajax({
-    //                 type : "DELETE",
-    //                 url : "/v1/board/"+searchParam("board_seq"),
-    //                 dataType: 'json',
-    //                 success : function(data){
-    //                     alert(data.message)
-    //                     location.href="/main";
-    //                 },
-    //                 error : function (data){
-    //                     alert(data.responseJSON.message)
-    //                 }})
-    //         })
-    //         var commentHtml = "";
-    //         data.commentAll.forEach(await function (item, index){
-    //             commentHtml += "<div class=\"card\">\n" +
-    //                 "                <div class=\"card-header\">\n" +
-    //                 "                   <span>회원 : "+item.comment.commentUserEmail+"</span><small style=\"float: right;\"> 날짜 : "+item.comment.commentCreatedAt+"</small>\n" +
-    //                 "                </div>\n" +
-    //                 "                <div class=\"card-body\">\n" +
-    //                 "                  <div style=\"float: left; width: 70%; margin-bottom: 20px\"  ><span  class=\"card-text\">"+ item.comment.commentContent+"</span></div>\n" +
-    //                 "                  <button style=\"float: right;\" type=\"button\" class=\"btn btn-default commentDelete\"> 삭제 <span class=\"glyphicon glyphicon-share-alt\"></span></button>\n" +
-    //                 "                   <input style=\"visibility: hidden; display: none;\" type=\"text\" value=\""+item.comment.commentSeq +"\">" +
-    //                 "                  <button style=\"float: right;\" type=\"button\" class=\"btn btn-default commentAnswer\"> 답장 <span class=\"glyphicon glyphicon-share-alt\"></span></button>\n" +
-    //                 "                   <div style=\"visibility: hidden; display: none;\" >" +
-    //                 "                   <input style=\"width:80%; float: left;\" type=\"text\" class=\"form-control\" id=\"answerData\" name=\"comment\" aria-describedby=\"emailHelp\">\n" +
-    //                 "                   <button style=\"float: right;\"type=\"submit\" class=\"btn btn-primary answerButton\">Submit</button>" +
-    //                 "                   <input style=\"visibility: hidden; display: none;\" type=\"text\" value=\""+item.comment.commentSeq +"\">" +
-    //                 "                  </div>"+
-    //                 "\n" +
-    //                 "                </div>\n"+
-    //                 "<div class=\"card\">\n"
-    //
-    //             item.bigComments.forEach(function(item, index) {
-    //                 commentHtml += "<div class=\"card-body\">\n" +
-    //                     "<div style=\"float: left; width: 70%;\" ><span  class=\"card-text\">ㄴ"+item.bigCommentContent+"</span> <p><span style='font-size: small'> 작성자 : "+ item.bigCommentUserEmail +" 날짜 "+item.bigCommentCreatedAt+"</span></p></div>\n" +
-    //                     "<button style=\"float: right;\" type=\"button\" class=\"btn btn-default bigCommentDelete\"> 삭제 <span class=\"glyphicon glyphicon-share-alt\"></span></button>\n" +
-    //                     "<input style=\"visibility: hidden; display: none;\" type=\"text\" value=\""+item.bigCommentSeq +"\">" +
-    //                     "</div>\n"
-    //             })
-    //             commentHtml += "</div></div>"
-    //
-    //             $("#comment").html(commentHtml)
-    //
-    //             $(".commentAnswer").click(function (){
-    //                 console.log($(this).next())
-    //                 $(this).next().css('visibility','visible')
-    //                 $(this).next().css('display','')
-    //             })
-    //             $(".answerButton").click(function (){
-    //                 console.log($(this).prev().val());
-    //                 var formData = {
-    //                     'content' : $(this).prev().val()
-    //                 }
-    //                 $.ajax({
-    //                     type : "POST",
-    //                     url : "/v1/comment/"+$(this).next().val(),
-    //                     data : formData,
-    //                     dataType: 'json',
-    //                     success : function(data){
-    //                         alert(data.message)
-    //                         location.href="/mainDetail?board_seq="+searchParam("board_seq");
-    //                     },
-    //                     error : function (data){
-    //                         alert(data.responseJSON.message)
-    //                     }})
-    //             })
-    //
-    //             $(".bigCommentDelete").click(function (){
-    //                 $.ajax({
-    //                     type : "DELETE",
-    //                     url : "/v1/bigComment/"+$(this).next().val() ,
-    //                     dataType: 'json',
-    //                     success : function(data) {
-    //                         alert(data.message)
-    //                         location.href = "/mainDetail?board_seq="+searchParam("board_seq");
-    //                     },
-    //                     error : function (data){
-    //                         alert(data.responseJSON.message)
-    //                     }})
-    //             })
-    //             $(".commentDelete").click(function (){
-    //                 $.ajax({
-    //                     type : "DELETE",
-    //                     url : "/v1/comment/"+$(this).next().val() ,
-    //                     dataType: 'json',
-    //                     success : function(data) {
-    //                         alert(data.message)
-    //                         location.href = "/mainDetail?board_seq="+searchParam("board_seq");
-    //                     },
-    //                     error : function (data){
-    //                         alert(data.responseJSON.message)
-    //                     }
-    //                 })
-    //             })
-    //         })
-    //     },
-    //     error : function (data){
-    //         alert(data.responseJSON.message)
-    //     }})
-</script>

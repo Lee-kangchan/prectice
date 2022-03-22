@@ -87,39 +87,43 @@
     <script>
 
         //props 전달 안되는 문제
-        
         Vue.component('email-component', {
             props: {
                 emails : String,
             },
             template: "<p><span>email : </span> <span> {{ emails }}</span></p>"
         })
+
         new Vue({
             el : '#userUpdate',
+            data : {
+                emailData : ""
+            },
+            props: ['password','name','phone'],
             created(){
+                var _this = this;
                 $.ajax({
                     type : "GET",
                     url : "/v1/user",
                     dataType: 'json',
                     success : function(data){
-                        this.emailData = data.userEmail
+                        _this.emailData = data.userEmail
+                        _this.password = data.userPassword
+                        _this.name = data.userName
+                        _this.phone = data.userPhone
                     },
                     error : function (data){
                         alert(data.responseJSON.message)
                     }
                 })
             },
-            data : {
-                emailData : ""
-            },
-
             methods: {
                 getUpdateUser : function () {
-                    // var formData = {
-                    //     'password' : this.password,
-                    //     'name' : this.name,
-                    //     'phone' : this.phone
-                    // }
+                    var formData = {
+                        'password' : this.password,
+                        'name' : this.name,
+                        'phone' : this.phone
+                    }
                     $.ajax({
                         type : "PUT",
                         url : "/v1/user",
@@ -155,16 +159,18 @@
             props : ['searchData'],
             methods: {
                 getSearch : function () {
+                    var _this = this;
                     $.ajax({
                         type : "GET",
                         url : "/v1/board?search="+this.searchData,
                         dataType: 'json',
                         success : function(data){
-                            location.href="/main?search="+this.searchData
+                            location.href="/main?search="+_this.searchData
                         },
                         error : function (data){
                             alert(data.responseJSON.message)
-                        }})
+                        }
+                    })
                 }
             }
         })

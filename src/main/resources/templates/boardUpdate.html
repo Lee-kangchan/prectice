@@ -69,7 +69,7 @@
     </div>
     <div class="form-group">
         <label for="exampleFormControlTextarea1">Content</label>
-        <textarea name="content" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="내용"  v-model="content" ></textarea>
+        <textarea name="content" class="form-control" id="exampleFormControlTextarea1" rows="10" placeholder="내용"  v-model="content"  ></textarea>
     </div>
 
     <button @click="getBoardUpdate()" id="boardSubmit" class="btn btn-primary">Submit</button>
@@ -86,16 +86,18 @@
         props : ['searchData'],
         methods: {
             getSearch : function () {
+                var _this = this;
                 $.ajax({
                     type : "GET",
                     url : "/v1/board?search="+this.searchData,
                     dataType: 'json',
                     success : function(data){
-                        location.href="/main?search="+this.searchData
+                        location.href="/main?search="+_this.searchData
                     },
                     error : function (data){
                         alert(data.responseJSON.message)
-                    }})
+                    }
+                })
             }
         }
     })
@@ -103,16 +105,18 @@
         el : '#boardUpdate',
         props: ['title', 'content'],
         created() {
+            var _this = this;
             $.ajax({
                 type : "GET",
                 url : "/v1/board/"+searchParam("board_seq"),
                 dataType: 'json',
                 success : function(data) {
-                    this.title = data.board.boardTitle;
-                    this.content = data.board.boardContent;
-                    this.$emit("title",this.title);
-                    this.$emit("content", this.content);
-                    console.log(data.board.boardTitle + "==" + this.title);
+                    _this.title = data.board.boardTitle;
+                    _this.content = data.board.boardContent;
+                    _this.$emit("title",this.title);
+                    _this.$emit("content", this.content);
+                    console.log(data)
+                    console.log(data.board.boardTitle + "==" + _this.title);
                 },error : function (data){
                     alert(data.responseJSON.message)
                     location.href = "/main"
@@ -137,7 +141,8 @@
                         },
                         error : function (data){
                             alert(data.responseJSON.message)
-                        }})
+                        }
+                    료})
             },
         }
     })
