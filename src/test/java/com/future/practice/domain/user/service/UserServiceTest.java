@@ -28,7 +28,6 @@ public class UserServiceTest {
     @DisplayName("멤버 조회")
     void selectTest(HttpSession session){
         UserDto.Login loginDto = UserDto.Login.builder().email("abc@naver.com").password("1234").build();
-        ResponseEntity<ResponseDefaultDto> user = userService.loginService(loginDto,session);
 //        assertEquals(user.getBody().getMessage().getUserName(), "abc");
     }
 
