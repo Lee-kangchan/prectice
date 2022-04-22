@@ -23,6 +23,7 @@ public class BoardQueryRepository   {
     public List<Board> findAllByPage(){
         return query
                 .selectFrom(QBoard.board)
+                .where(QBoard.board.eq(QBoard.board))
                 .fetch();
     }
 

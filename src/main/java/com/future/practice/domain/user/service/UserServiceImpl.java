@@ -23,15 +23,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public User loginService(UserDto.Login loginDto) {
 
-        if(userMapper.findOneByEmail(loginDto.toEntity()) == null) throw new EmailNotExistException(); // 이메일 존재 X
-        User user = userMapper.findOneByEmailAndPassword(loginDto.toEntity());
+        if(!userMapper.findOneByEmail(loginDto.toEntity()).isPresent()) throw new EmailNotExistException(); // 이메일 존재 X
+        User user = userMapper.findOneByEmailAndPassword(loginDto.toEntity()).get();
         if(user==null) throw new UserPasswordWrongException(); // 유저 패스워드 오류
         return user;
     }
 
     @Override
     public User userInformService(User user){
-        return userMapper.findOneByEmail(user);
+        return userMapper.findOneByEmail(user).get();
     }
 
     @Override

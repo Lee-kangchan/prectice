@@ -66,5 +66,4 @@
         FROM USER
         WHERE user_email = #{userEmail}
     </delete>
-
 </mapper>
