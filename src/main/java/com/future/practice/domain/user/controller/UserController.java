@@ -6,8 +6,10 @@ import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.User;
 import com.future.practice.global.exception.custom.UserAlreadyExistException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,11 +20,11 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 @Controller
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value="/v1/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDefaultDto> login(HttpSession session, UserDto.Login loginDto){

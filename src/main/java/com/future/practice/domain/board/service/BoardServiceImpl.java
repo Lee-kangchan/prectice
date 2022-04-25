@@ -7,6 +7,7 @@ import com.future.practice.domain.board.dto.ResponseBoardDto;
 import com.future.practice.domain.board.mapper.BoardMapper;
 import com.future.practice.domain.board.mapper.CommentMapper;
 import com.future.practice.global.constant.Common;
+import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.entity.Board;
 import com.future.practice.global.entity.Comment;
 import com.future.practice.global.entity.User;
@@ -29,26 +30,32 @@ public class BoardServiceImpl implements BoardService {
     private final CommentMapper commentMapper;
     @Override
     @Transactional
-    public void insertBoardService(BoardDto boardDto, User user ) {
+    public String insertBoardService(BoardDto boardDto, User user ) {
         if(boardDto.getTitle().equals("")) throw new BoardTitleNotExistException(); // 게시물 제목 없을 시
         if(boardDto.getContent().equals("")) throw new BoardContentNotExistException(); // 게시물 내용 없을 시
         boardMapper.save(boardDto.toEntity(user.getUserEmail()));
+
+        return ResponseMessage.RESPONSE_BOARD_INSERT_MESSAGE;
     }
     @Override
     @Transactional
-    public void updateBoardService(BoardDto boardDto, long boardSeq, User user) {
+    public String updateBoardService(BoardDto boardDto, long boardSeq, User user) {
         if(boardDto.getTitle().equals("")) throw new BoardTitleNotExistException(); // 게시물 제목 없을 시
         if(boardDto.getContent().equals("")) throw new BoardContentNotExistException(); // 게시물 내용 없을 시
         boardMapper.updateByBoardSeq(boardDto.toEntity(boardSeq));
+
+        return null;
     }
 
     @Override
     @Transactional
-    public void deleteBoardService(long boardSeq, User user) {
+    public String deleteBoardService(long boardSeq, User user) {
         Board board = Board.builder().boardSeq(boardSeq).boardUserEmail(user.getUserEmail()).build();
         if(boardMapper.findOneByBoardSeq(boardSeq)==null ) throw new BoardNotFoundException(); // 게시물 존재 X
         if(boardMapper.findOneByBoardSeqAndBoardUserEmail(board)==null) throw new BoardNotAccessException(); // 게시물 권한 확인
         boardMapper.deleteByBoardSeq(board);
+
+        return null;
     }
 
 

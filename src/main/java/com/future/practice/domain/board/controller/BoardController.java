@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +31,14 @@ public class BoardController {
 
     private final BoardService boardService;
     @PostMapping("")
-    public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session,BoardDto boardDto){
+    public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session, BoardDto boardDto){
             if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
-            boardService.insertBoardService(boardDto, user);
+
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_INSERT_MESSAGE).build());
+                    .body(ResponseDefaultDto.builder().code(200).message(boardService.insertBoardService(boardDto, user)).build());
 
     }
 
@@ -46,12 +47,11 @@ public class BoardController {
                             ,BoardDto boardDto){
             if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
-            boardService.updateBoardService(boardDto, board_seq, user);
+
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_UPDATE_MESSAGE).build());
-
+                    .body(ResponseDefaultDto.builder().code(200).message(boardService.updateBoardService(boardDto, board_seq, user)).build());
     }
 
     @DeleteMapping("/{board_seq}")
@@ -66,7 +66,7 @@ public class BoardController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseBoardDto> selectBoard(@RequestParam Map<String, Object> map){
+    public ResponseEntity<ResponseBoardDto> selectBoard(@RequestParam Map<String, Object> map, Pageable pageable){
             HttpHeaders headers = new HttpHeaders();
             ResponseBoardDto responseBoardDto;
             if (map.get("search") == null) responseBoardDto = boardService.selectBoardService(map);
