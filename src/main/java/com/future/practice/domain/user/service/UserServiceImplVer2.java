@@ -3,6 +3,8 @@ package com.future.practice.domain.user.service;
 import com.future.practice.domain.user.dto.UserDto;
 import com.future.practice.domain.user.repository.UserRepository;
 import com.future.practice.global.constant.Common;
+import com.future.practice.global.constant.ResponseMessage;
+import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.User;
 import static com.future.practice.global.constant.Common.PASSWORD_PATTERN;
 import com.future.practice.global.exception.ErrorCode;
@@ -28,7 +30,7 @@ public class UserServiceImplVer2 implements UserService {
     @Override
     public User loginService(UserDto.Login loginDto) {
         return userRepository.findUserByUserEmailAndUserPassword(loginDto.getEmail(), loginDto.getPassword())
-                .orElseThrow(() -> new LoginException(ErrorCode.EMAIL_NOT_EXIST));
+                .orElseThrow(() -> new LoginException(ErrorCode.USER_NOT_EXIST));
     }
 
     /**
@@ -46,7 +48,7 @@ public class UserServiceImplVer2 implements UserService {
      * @param informDto
      */
     @Override
-    public void signService(UserDto.Inform informDto) {
+    public ResponseDefaultDto signService(UserDto.Inform informDto) {
         // 이메일 중복체크
         if(userRepository.findUserByUserEmail(informDto.getEmail()).isPresent()) throw new LoginException(ErrorCode.EMAIL_ALREADY_EXIST);
         // 패스워드 패턴 체크
@@ -55,6 +57,7 @@ public class UserServiceImplVer2 implements UserService {
         if(userRepository.findUserByUserPhone(informDto.getPhone()).isPresent()) throw new LoginException(ErrorCode.USER_ALREADY_EXIST);
         // 유저 저장
         userRepository.save(informDto.toEntity());
+        return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_SIGN_MESSAGE).build();
     }
 
     /**
@@ -63,7 +66,7 @@ public class UserServiceImplVer2 implements UserService {
      * @param email
      */
     @Override
-    public void updateService(UserDto.Inform informDto, String email) {
+    public ResponseDefaultDto updateService(UserDto.Inform informDto, String email) {
 
         // 패스워드 패턴 체크
         if(PASSWORD_PATTERN.matcher(informDto.getPassword()).find()) throw new LoginException(ErrorCode.PASSWORD_RULES_VIOLATION);
@@ -71,6 +74,8 @@ public class UserServiceImplVer2 implements UserService {
         if(!userRepository.findUserByUserEmail(email).isPresent()) throw new LoginException(ErrorCode.USER_NOT_EXIST);
         // 유저 변경
         userRepository.save(informDto.toEntity(email));
+
+        return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_SIGN_MESSAGE).build();
     }
 
     /**
@@ -78,11 +83,13 @@ public class UserServiceImplVer2 implements UserService {
      * @param email
      */
     @Override
-    public void deleteService(String email) {
+    public ResponseDefaultDto deleteService(String email) {
         // 유저 존재 확인
         userRepository.findUserByUserEmail(email).orElseThrow(() ->  new LoginException(ErrorCode.USER_NOT_EXIST));
         // 유저 삭제
         userRepository.deleteUserByUserEmail(email);
+
+        return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_USER_DELETE_MESSAGE).build();
     }
 
 }

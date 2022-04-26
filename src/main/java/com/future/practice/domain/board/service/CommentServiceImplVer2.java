@@ -49,8 +49,9 @@ public class CommentServiceImplVer2 implements CommentService{
     @Override
     @Transactional
     public void deleteBigComment(long bigCommentSeq, User user) {
-        if(!bigCommentRepository.findBigCommentByBigCommentCommentSeq(bigCommentSeq).isPresent()) throw  new CommentException(ErrorCode.COMMENT_NOT_FOUND);
+        if(!bigCommentRepository.findBigCommentByBigCommentSeq(bigCommentSeq).isPresent()) throw  new CommentException(ErrorCode.COMMENT_NOT_FOUND);
         if(!bigCommentRepository.findBigCommentByBigCommentSeqAndBigCommentUserEmail(bigCommentSeq, user.getUserEmail()).isPresent()) throw new CommentException(ErrorCode.COMMENT_NOT_ACCESS);
+
         bigCommentRepository.deleteByBigCommentSeq(bigCommentSeq);
     }
 }

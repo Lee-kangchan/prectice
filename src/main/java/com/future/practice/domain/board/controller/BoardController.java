@@ -5,6 +5,7 @@ import com.future.practice.domain.board.dto.ResponseBoardDetailDto;
 import com.future.practice.domain.board.dto.ResponseBoardDto;
 import com.future.practice.domain.board.service.BoardService;
 import com.future.practice.global.constant.ResponseMessage;
+import com.future.practice.global.dto.PageReqDto;
 import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.Board;
 import com.future.practice.global.entity.User;
@@ -13,13 +14,13 @@ import com.future.practice.global.exception.custom.UserAlreadyExistException;
 import com.future.practice.global.exception.custom.UserNotExistException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Map;
 
@@ -64,15 +65,16 @@ public class BoardController {
                     .headers(headers)
                     .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_DELETE_MESSAGE).build());
     }
-
     @GetMapping("")
-    public ResponseEntity<ResponseBoardDto> selectBoard(@RequestParam Map<String, Object> map, Pageable pageable){
-            HttpHeaders headers = new HttpHeaders();
-            ResponseBoardDto responseBoardDto;
-            if (map.get("search") == null) responseBoardDto = boardService.selectBoardService(map);
-            else responseBoardDto = boardService.selectSearchBoardService(map);
-            return ResponseEntity.ok()
-                    .headers(headers).body(responseBoardDto);
+    public ResponseEntity<Page<Board>> selectBoard(PageReqDto pageReqDto){
+        log.info(pageReqDto.getSearch() +"\t"+ pageReqDto.getPage() + "\t"+ pageReqDto.getSize());
+
+        HttpHeaders headers = new HttpHeaders();
+        Page<Board> boardPage;
+        if (pageReqDto.getSearch() == null) boardPage = boardService.selectBoardService(pageReqDto);
+        else boardPage = boardService.selectSearchBoardService(pageReqDto);
+        return ResponseEntity.ok()
+                .headers(headers).body(boardPage);
 
     }
 

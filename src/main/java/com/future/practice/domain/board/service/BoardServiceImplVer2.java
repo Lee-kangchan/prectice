@@ -1,22 +1,33 @@
 package com.future.practice.domain.board.service;
 
 import com.future.practice.domain.board.dto.BoardDto;
+import com.future.practice.domain.board.dto.CommentAll;
 import com.future.practice.domain.board.dto.ResponseBoardDetailDto;
 import com.future.practice.domain.board.dto.ResponseBoardDto;
 import com.future.practice.domain.board.repository.BigCommentRepository;
 import com.future.practice.domain.board.repository.BoardRepository;
 import com.future.practice.domain.board.repository.CommentRepository;
 import com.future.practice.global.constant.ResponseMessage;
+import com.future.practice.global.dto.PageReqDto;
+import com.future.practice.global.entity.Board;
+import com.future.practice.global.entity.Comment;
 import com.future.practice.global.entity.User;
 import com.future.practice.global.exception.ErrorCode;
 import com.future.practice.global.exception.custom.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class BoardServiceImplVer2 implements BoardService{
 
     private final BoardRepository boardRepository;
@@ -52,18 +63,33 @@ public class BoardServiceImplVer2 implements BoardService{
     }
 
     @Override
-    public ResponseBoardDto selectBoardService(Map<String, Object> map) {
-        
-        return null;
+    public Page<Board> selectBoardService(PageReqDto pageReqDto) {
+        Page<Board> boardPage = boardRepository.findAllByBoardTitleLike("", PageRequest.of(pageReqDto.getPage(), pageReqDto.getSize()));
+        return boardPage;
     }
 
     @Override
     public ResponseBoardDetailDto selectBoardDetailService(long boardSeq) {
-        return null;
+        Optional<Board> board = boardRepository.findBoardByBoardSeq(boardSeq);
+        if(!board.isPresent()) throw new BoardNotFoundException();
+        List<CommentAll> commentAll = new ArrayList<>();
+        List<Comment> comment = commentRepository.findAllByCommentBoardSeq(boardSeq);
+        for(Comment commentList : comment){
+            commentAll.add(CommentAll.builder()
+                    .comment(commentList)
+                    .bigComments(bigCommentRepository.findAllByBigCommentCommentSeq(commentList.getCommentSeq()))
+                    .build());
+        }
+        return ResponseBoardDetailDto.builder()
+                .code(200)
+                .board(board.get())
+                .commentAll(commentAll)
+                .build();
     }
 
     @Override
-    public ResponseBoardDto selectSearchBoardService(Map<String, Object> map) {
-        return null;
+    public Page<Board> selectSearchBoardService(PageReqDto pageReqDto) {
+        return boardRepository.findAllByBoardTitleLike(pageReqDto.getSearch(), PageRequest.of(pageReqDto.getPage(), pageReqDto.getSize()));
+
     }
 }

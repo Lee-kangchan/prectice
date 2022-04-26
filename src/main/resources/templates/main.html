@@ -69,7 +69,7 @@
                   </tr>
                   </thead>
                   <tbody id="tableContent">
-                    <tr v-for='(item, index) in boards' @click="getBoard(item.boardSeq)"  v-bind:key = "item.boardSeq">
+                    <tr v-for='(item, index) in boards' @click="getBoard(item.boardSeq)"  :key = "item.boardSeq">
                         <th scope="col" colspan="1"> {{item.boardSeq}}</th>
                         <td scope="col" colspan="5"><a style="color:black;text-decoration-line: none" >{{item.boardTitle}}</a></td>
                         <td scope="col" colspan="2"> {{item.boardModifiedAt}} </td>
@@ -80,7 +80,7 @@
               <nav aria-label="Page navigation example" id="page" style="display: flex;">
                   <ul class="pagination" style="margin: auto;">
                       <li class="page-item"><a id="previous" class="page-link" href="#" @click="getPrevious()">Previous</a></li>
-                      <li v-for='(item, index) in pages' v-bind:key = "item.num" class="page-item" @click="getNumber(item.num)"><a class="page-link" href="#"> {{item.num}} </a></li>
+                      <li v-for='(item, index) in pages' :key = "item.num" class="page-item" @click="getNumber(item.num)"><a class="page-link" href="#"> {{item.num}} </a></li>
                       <li class="page-item"><a id="next" class="page-link" href="#" @click="getNext()" >Next</a></li>
                   </ul>
 
@@ -92,111 +92,113 @@
     <script>
 
 
-        function searchParam(key) {
-            return new URLSearchParams(location.search).get(key);
-        };
+    function searchParam(key) {
+        return new URLSearchParams(location.search).get(key);
+    };
 
-        var searchData = searchParam("search");
-        var pageData = searchParam("page");
-        let URL = "/main?";
-        let search = "";
-        let page = "page=";
-        if(searchData != null) search ="search="+searchData+"&";
-        if(pageData == null) pageData =1;
+    var searchData = searchParam("search");
+    var pageData = searchParam("page");
+    let URL = "/main?";
+    let search = "";
+    let page = "page=";
+    if(searchData != null) search ="search="+searchData+"&";
+    if(pageData == null) pageData =1;
 
 
 
-        var mainBoard = new Vue({
-            el : '#mainTable',
-            data : {
-                searchData : searchData != null ? "search="+searchData+"&" : null,
-                pageData : pageData == null ? 1 : searchParam("page"),
-                URL : "/main?",
-                page : "page=",
-                length : 1,
-                pageNum : 1,
-                boards : [],
-                pages : []
-            },
-            mounted: function(){
+    var mainBoard = new Vue({
+        el : '#mainTable',
+        data : {
+            searchData : searchData != null ? "search="+searchData+"&" : null,
+            pageData : pageData == null ? 1 : searchParam("page"),
+            sizeData : sizeData == null ? 1 : searchParam("size"),
+            URL : "/main?",
+            page : "page=",
+            size : "size=",
+            length : 1,
+            pageNum : 1,
+            boards : [],
+            pages : []
+        },
+        mounted: function(){
+            var _this = this;
+            _this.getList();
+        },
+        methods: {
+            getList : function () {
                 var _this = this;
-                _this.getList();
+                $.ajax({
+                    type : "GET",
+                    url : "/v1/board?"+search+page+pageData+"&"+size+sizeData,
+                    dataType: 'json',
+                    success : async function(data){
+                        _this.boards = data.board;
+
+                        var startPage = Math.floor( data.page/50 ) *5;
+                        var pages = [];
+                        for(var i=startPage+1 ; i <= startPage+5; i++){
+                            if(i > data.length) break;
+                            pages.push({
+                                num : i
+                            })
+                        }
+                        _this.pageNum = data.page;
+                        _this.length = data.length;
+                        _this.pages = pages;
+                    },
+                    error : function (data){
+                        alert(data.responseJSON.message)
+                    }
+                })
             },
-            methods: {
-                getList : function () {
-                    var _this = this;
-                    $.ajax({
-                        type : "GET",
-                        url : "/v1/board?"+search+page+pageData,
-                        dataType: 'json',
-                        success : async function(data){
-                            _this.boards = data.board;
-
-                            var startPage = Math.floor( data.page/50 ) *5;
-                            var pages = [];
-                            for(var i=startPage+1 ; i <= startPage+5; i++){
-                                if(i > data.length) break;
-                                pages.push({
-                                    num : i
-                                })
-                            }
-                            _this.pageNum = data.page;
-                            _this.length = data.length;
-                            _this.pages = pages;
-                        },
-                        error : function (data){
-                            alert(data.responseJSON.message)
-                        }
-                    })
-                },
-                getPrevious : function (){
-                    var _this = this;
-                    var pre = _this.pageNum/10 ;
-                    if(pre <= 0 ){
-                        alert("뒤로 갈수 없습니다.")
-                    }else {
-                        location.href = URL+search+page + pre;
-                    }
-                },
-
-                getNext : function (){
-                    var _this = this;
-                    var next = _this.pageNum/10 + 2;
-                    if(next > _this.length ){
-                        alert("이후 게시물이 없습니다.")
-                    }else {
-                        location.href = URL+search+page + next;
-                    }
-                },
-                getNumber : function (pageNumber){
-                    location.href = URL+search+page + pageNumber;
-                },
-                getBoard : function (boardNumber){
-                    location.href = "/mainDetail?board_seq=" + boardNumber;
+            getPrevious : function (){
+                var _this = this;
+                var pre = _this.pageNum/10 ;
+                if(pre <= 0 ){
+                    alert("뒤로 갈수 없습니다.")
+                }else {
+                    location.href = URL+search+page + pre;
                 }
-            }
-        })
-        var searchPage = new Vue({
-            el : '#search',
-            props : ['searchData'],
-            methods: {
-                getSearch : function () {
-                    var _this = this;
-                    $.ajax({
-                        type : "GET",
-                        url : "/v1/board?search="+this.searchData,
-                        dataType: 'json',
-                        success : function(data){
-                            console.log(_this.searchData)
-                            location.href="/main?search="+_this.searchData
-                        },
-                        error : function (data){
-                            alert(data.responseJSON.message)
-                        }
-                    })
+            },
+
+            getNext : function (){
+                var _this = this;
+                var next = _this.pageNum/10 + 2;
+                if(next > _this.length ){
+                    alert("이후 게시물이 없습니다.")
+                }else {
+                    location.href = URL+search+page + next;
                 }
+            },
+            getNumber : function (pageNumber){
+                location.href = URL+search+page + pageNumber;
+            },
+            getBoard : function (boardNumber){
+                location.href = "/mainDetail?board_seq=" + boardNumber;
             }
-        })
+        }
+    })
+    var searchPage = new Vue({
+        el : '#search',
+        props : ['searchData'],
+        methods: {
+            getSearch : function () {
+                var _this = this;
+                $.ajax({
+                    type : "GET",
+                    url : "/v1/board?search="+this.searchData,
+                    dataType: 'json',
+                    success : function(data){
+                        console.log(_this.searchData)
+                        location.href="/main?search="+_this.searchData
+                    },
+                    error : function (data){
+                        alert(data.responseJSON.message)
+                    }
+                })
+            }
+        }
+    })
 
 
     </script>
