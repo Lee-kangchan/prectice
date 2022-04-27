@@ -33,42 +33,35 @@ public class BoardController {
     private final BoardService boardService;
     @PostMapping("")
     public ResponseEntity<ResponseDefaultDto> insertBoard(HttpSession session, BoardDto boardDto){
-            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
-
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(ResponseDefaultDto.builder().code(200).message(boardService.insertBoardService(boardDto, user)).build());
+                    .body(boardService.insertBoardService(boardDto, user));
 
     }
 
     @PutMapping("/{board_seq}")
     public ResponseEntity<ResponseDefaultDto> updateBoard(HttpSession session, @PathVariable("board_seq") int board_seq
                             ,BoardDto boardDto){
-            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
-
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(ResponseDefaultDto.builder().code(200).message(boardService.updateBoardService(boardDto, board_seq, user)).build());
+                    .body(boardService.updateBoardService(boardDto, board_seq, user));
     }
 
     @DeleteMapping("/{board_seq}")
     public ResponseEntity<ResponseDefaultDto> deleteBoard(HttpSession session, @PathVariable("board_seq") int board_seq){
-            if (session.getAttribute("user") == null) throw new UserNotExistException();
             User user = (User) session.getAttribute("user");
-            boardService.deleteBoardService(board_seq, user);
             HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_DELETE_MESSAGE).build());
+                    .body(boardService.deleteBoardService(board_seq, user));
     }
+
     @GetMapping("")
     public ResponseEntity<Page<Board>> selectBoard(PageReqDto pageReqDto){
-        log.info(pageReqDto.getSearch() +"\t"+ pageReqDto.getPage() + "\t"+ pageReqDto.getSize());
-
         HttpHeaders headers = new HttpHeaders();
         Page<Board> boardPage;
         if (pageReqDto.getSearch() == null) boardPage = boardService.selectBoardService(pageReqDto);

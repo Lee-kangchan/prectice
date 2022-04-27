@@ -9,6 +9,7 @@ import com.future.practice.domain.board.repository.BoardRepository;
 import com.future.practice.domain.board.repository.CommentRepository;
 import com.future.practice.global.constant.ResponseMessage;
 import com.future.practice.global.dto.PageReqDto;
+import com.future.practice.global.dto.ResponseDefaultDto;
 import com.future.practice.global.entity.Board;
 import com.future.practice.global.entity.Comment;
 import com.future.practice.global.entity.User;
@@ -35,31 +36,30 @@ public class BoardServiceImplVer2 implements BoardService{
     private final BigCommentRepository bigCommentRepository;
 
     @Override
-    public String insertBoardService(BoardDto boardDto, User user) {
+    public ResponseDefaultDto insertBoardService(BoardDto boardDto, User user) {
         if(boardDto.getTitle().isEmpty()) throw new BoardException(ErrorCode.BOARD_TITLE_NOT_EXIST); // 제목 X
         if(boardDto.getContent().isEmpty()) throw new BoardException(ErrorCode.BOARD_CONTENT_NOT_EXIST); // 내용 X
         boardRepository.save(boardDto.toEntity(user.getUserEmail()));
 
-        return ResponseMessage.RESPONSE_BOARD_INSERT_MESSAGE;
+        return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_INSERT_MESSAGE).build();
     }
 
     @Override
-    public String updateBoardService(BoardDto boardDto, long boardSeq, User user) {
+    public ResponseDefaultDto updateBoardService(BoardDto boardDto, long boardSeq, User user) {
         if(boardDto.getTitle().isEmpty()) throw new BoardException(ErrorCode.BOARD_TITLE_NOT_EXIST); // 제목 X
         if(boardDto.getContent().isEmpty()) throw new BoardException(ErrorCode.BOARD_CONTENT_NOT_EXIST); // 내용 X
         if(!boardRepository.findBoardByBoardSeqAndBoardUserEmail(boardSeq, boardDto.getTitle()).isPresent()) throw new BoardException(ErrorCode.BOARD_NOT_ACCESS); // 권한 X
         boardRepository.save(boardDto.toEntity(boardSeq));
-
-        return ResponseMessage.RESPONSE_BOARD_UPDATE_MESSAGE;
+        return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_UPDATE_MESSAGE).build();
     }
 
     @Override
-    public String deleteBoardService(long boardSeq, User user) {
+    public ResponseDefaultDto deleteBoardService(long boardSeq, User user) {
         if(!boardRepository.findBoardByBoardSeq(boardSeq).isPresent() ) throw new BoardNotFoundException(); // 게시물 존재 X
         if(!boardRepository.findBoardByBoardSeqAndBoardUserEmail(boardSeq,user.getUserEmail()).isPresent()) throw new BoardNotAccessException(); // 권한 X
         boardRepository.deleteBoardByBoardSeq(boardSeq);
 
-        return ResponseMessage.RESPONSE_BOARD_DELETE_MESSAGE;
+        return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_BOARD_DELETE_MESSAGE).build();
     }
 
     @Override
