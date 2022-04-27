@@ -12,12 +12,18 @@ import com.future.practice.global.exception.custom.LoginException;
 import com.future.practice.global.exception.custom.PasswordRulesViolationException;
 import com.future.practice.global.exception.custom.UserNotExistException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.util.regex.Pattern;
 
 
-@Service("UserService")
+@Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImplVer2 implements UserService {
 
@@ -52,7 +58,7 @@ public class UserServiceImplVer2 implements UserService {
         // 이메일 중복체크
         if(userRepository.findUserByUserEmail(informDto.getEmail()).isPresent()) throw new LoginException(ErrorCode.EMAIL_ALREADY_EXIST);
         // 패스워드 패턴 체크
-        if(PASSWORD_PATTERN.matcher(informDto.getPassword()).find()) throw new LoginException(ErrorCode.PASSWORD_RULES_VIOLATION);
+        if(!PASSWORD_PATTERN.matcher(informDto.getPassword()).matches()) throw new LoginException(ErrorCode.PASSWORD_RULES_VIOLATION);
         // 존재 유저 확인 체크
         if(userRepository.findUserByUserPhone(informDto.getPhone()).isPresent()) throw new LoginException(ErrorCode.USER_ALREADY_EXIST);
         // 유저 저장
@@ -69,7 +75,7 @@ public class UserServiceImplVer2 implements UserService {
     public ResponseDefaultDto updateService(UserDto.Inform informDto, String email) {
 
         // 패스워드 패턴 체크
-        if(PASSWORD_PATTERN.matcher(informDto.getPassword()).find()) throw new LoginException(ErrorCode.PASSWORD_RULES_VIOLATION);
+        if(!PASSWORD_PATTERN.matcher(informDto.getPassword()).find()) throw new LoginException(ErrorCode.PASSWORD_RULES_VIOLATION);
         // 유저 존재 체크
         if(!userRepository.findUserByUserEmail(email).isPresent()) throw new LoginException(ErrorCode.USER_NOT_EXIST);
         // 유저 변경
@@ -80,15 +86,16 @@ public class UserServiceImplVer2 implements UserService {
 
     /**
      * 유저 삭제 서비스
-     * @param email
-     */
-    @Override
-    public ResponseDefaultDto deleteService(String email) {
-        // 유저 존재 확인
-        userRepository.findUserByUserEmail(email).orElseThrow(() ->  new LoginException(ErrorCode.USER_NOT_EXIST));
-        // 유저 삭제
-        userRepository.deleteUserByUserEmail(email);
+     * @param user
+     *
+     * */
 
+    @Override
+    public ResponseDefaultDto deleteService(User user) {
+
+        // 유저 존재 확인
+        userRepository.findUserByUserEmail(user.getUserEmail()).orElseThrow(() ->  new LoginException(ErrorCode.USER_NOT_EXIST));
+        userRepository.delete(user);
         return ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_USER_DELETE_MESSAGE).build();
     }
 

@@ -29,20 +29,23 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDefaultDto> login(HttpSession session, UserDto.Login loginDto){
-            if(session.getAttribute("user")!=null)  throw new LoginException(ErrorCode.SESSION_EXIST);
-            User user = userService.loginService(loginDto);
-            session.setAttribute("user", user); //session
+    public ResponseEntity<ResponseDefaultDto> login(HttpSession session, @RequestBody UserDto.Login loginDto){
+        log.info("Controller \t : " + loginDto.toString() );
+        if(session.getAttribute("user")!=null)  throw new LoginException(ErrorCode.SESSION_EXIST);
+        User user = userService.loginService(loginDto);
+        session.setAttribute("user", user); //session
+        log.info("login");
 
-            //token 생성, Session 생성
-            HttpHeaders headers = new HttpHeaders();
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_LOGIN_MESSAGE).build());
+        //token 생성, Session 생성
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(ResponseDefaultDto.builder().code(200).message(ResponseMessage.RESPONSE_LOGIN_MESSAGE).build());
     }
 
     @PostMapping("/sign")
-    public ResponseEntity<ResponseDefaultDto> sign(UserDto.Inform informDto){
+    public ResponseEntity<ResponseDefaultDto> sign(@RequestBody UserDto.Inform informDto){
+        log.info(informDto.toString());
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
@@ -50,7 +53,7 @@ public class UserController {
     }
 
     @PutMapping("")
-    public ResponseEntity<ResponseDefaultDto> updateUser( UserDto.Inform informDto, HttpSession session){
+    public ResponseEntity<ResponseDefaultDto> updateUser( @RequestBody UserDto.Inform informDto, HttpSession session){
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
@@ -69,7 +72,6 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(userService.deleteService(((User) session.getAttribute("user")).getUserEmail()));
-
+                .body(userService.deleteService(((User) session.getAttribute("user"))));
     }
 }

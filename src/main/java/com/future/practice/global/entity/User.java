@@ -2,6 +2,7 @@ package com.future.practice.global.entity;
 
 
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @ToString
 @Entity
+@DynamicUpdate
 public class User {
     @Id
     private String userEmail;

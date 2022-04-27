@@ -18,9 +18,18 @@ public class UserDto {
                     .userPassword(password)
                     .build();
         }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "\"email\" :\"" + email + '\"' +
+                    ", \"password\" : \"" + password + '\"' +
+                    '}';
+        }
     }
 
     @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(access= AccessLevel.PROTECTED)
@@ -44,6 +53,16 @@ public class UserDto {
                     .userName(name)
                     .userPhone(phone)
                     .build();
+        }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "\"email\" : \"" + email + '\"' +
+                    ", \"password\" : \"" + password + '\"' +
+                    ", \"name\" : \"" + name + '\"' +
+                    ", \"phone\" : \"" + phone + '\"' +
+                    '}';
         }
     }
 

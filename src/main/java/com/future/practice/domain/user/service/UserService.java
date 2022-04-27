@@ -8,6 +8,6 @@ public interface UserService {
     public User loginService(UserDto.Login loginDto);
     public ResponseDefaultDto signService(UserDto.Inform informDto);
     public ResponseDefaultDto updateService(UserDto.Inform informDto, String email);
-    public ResponseDefaultDto deleteService(String email);
+    public ResponseDefaultDto deleteService(User user);
     public User userInformService(User user);
 }
